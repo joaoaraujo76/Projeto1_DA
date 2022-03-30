@@ -15,14 +15,16 @@ public:
     std::string dataFolder = "../data/";
     std::vector<Order> orders;
     std::vector <Van> vans;
-    std::vector <std::string> filesname = {"orders.txt", "vans.txt"};
+    std::vector <std::string> filesname = {"orders.txt", "vans.txt", "express_deliveries.txt"};
 public:
     App();
     ~App();
     void readFile(int file);
     void readVans();
     void readOrders();
+    void writeExpressOrders(int time, std::vector<Order> orders);
     void loadData();
+    void optimizeExpressDeliveries();
     std::vector<Van> &getVans();
     std::vector<Order> &getOrders();
 };
