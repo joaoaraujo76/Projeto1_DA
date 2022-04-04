@@ -5,9 +5,9 @@
 class Van {
 public:
     Van(int MAX_VOL, int MAX_WEIGHT, int COST);
-    int getVolume();
-    int getWeight();
-    int getCost();
+    int getVolume() const;
+    int getWeight() const;
+    int getCost() const;
 private:
     int MAX_VOL;
     int MAX_WEIGHT;

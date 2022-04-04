@@ -6,14 +6,14 @@ Van::Van(int MAX_VOL, int MAX_WEIGHT, int COST) {
     this->COST=COST;
 }
 
-int Van::getVolume() {
+int Van::getVolume() const {
     return MAX_VOL;
 }
 
-int Van::getWeight() {
+int Van::getWeight() const {
     return MAX_WEIGHT;
 }
 
-int Van::getCost() {
+int Van::getCost() const {
     return COST;
 }
