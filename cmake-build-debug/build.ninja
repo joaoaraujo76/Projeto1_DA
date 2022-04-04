@@ -96,6 +96,18 @@ build CMakeFiles/Projeto1_DA.dir/src/App.cpp.o: CXX_COMPILER__Projeto1_DA_Debug 
   OBJECT_DIR = CMakeFiles/Projeto1_DA.dir
   OBJECT_FILE_DIR = CMakeFiles/Projeto1_DA.dir/src
 
+build CMakeFiles/Projeto1_DA.dir/src/Menu.cpp.o: CXX_COMPILER__Projeto1_DA_Debug /Users/tiagobranquinho/Desktop/universidade/2ANO/2$ semestre/DA/PROJECT_1/Projeto1_DA/src/Menu.cpp || cmake_object_order_depends_target_Projeto1_DA
+  DEP_FILE = CMakeFiles/Projeto1_DA.dir/src/Menu.cpp.o.d
+  FLAGS = -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.1.sdk -std=gnu++14
+  OBJECT_DIR = CMakeFiles/Projeto1_DA.dir
+  OBJECT_FILE_DIR = CMakeFiles/Projeto1_DA.dir/src
+
+build CMakeFiles/Projeto1_DA.dir/src/AppStarter.cpp.o: CXX_COMPILER__Projeto1_DA_Debug /Users/tiagobranquinho/Desktop/universidade/2ANO/2$ semestre/DA/PROJECT_1/Projeto1_DA/src/AppStarter.cpp || cmake_object_order_depends_target_Projeto1_DA
+  DEP_FILE = CMakeFiles/Projeto1_DA.dir/src/AppStarter.cpp.o.d
+  FLAGS = -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.1.sdk -std=gnu++14
+  OBJECT_DIR = CMakeFiles/Projeto1_DA.dir
+  OBJECT_FILE_DIR = CMakeFiles/Projeto1_DA.dir/src
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target Projeto1_DA
@@ -104,7 +116,7 @@ build CMakeFiles/Projeto1_DA.dir/src/App.cpp.o: CXX_COMPILER__Projeto1_DA_Debug 
 #############################################
 # Link the executable Projeto1_DA
 
-build Projeto1_DA: CXX_EXECUTABLE_LINKER__Projeto1_DA_Debug CMakeFiles/Projeto1_DA.dir/main.cpp.o CMakeFiles/Projeto1_DA.dir/src/Order.cpp.o CMakeFiles/Projeto1_DA.dir/src/Van.cpp.o CMakeFiles/Projeto1_DA.dir/src/App.cpp.o
+build Projeto1_DA: CXX_EXECUTABLE_LINKER__Projeto1_DA_Debug CMakeFiles/Projeto1_DA.dir/main.cpp.o CMakeFiles/Projeto1_DA.dir/src/Order.cpp.o CMakeFiles/Projeto1_DA.dir/src/Van.cpp.o CMakeFiles/Projeto1_DA.dir/src/App.cpp.o CMakeFiles/Projeto1_DA.dir/src/Menu.cpp.o CMakeFiles/Projeto1_DA.dir/src/AppStarter.cpp.o
   FLAGS = -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.1.sdk
   OBJECT_DIR = CMakeFiles/Projeto1_DA.dir
   POST_BUILD = :
