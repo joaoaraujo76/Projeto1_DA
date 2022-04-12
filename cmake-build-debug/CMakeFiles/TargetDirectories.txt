@@ -1,3 +1,0 @@
-/Users/tiagobranquinho/Desktop/universidade/2ANO/2 semestre/DA/PROJECT_1/Projeto1_DA/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/Users/tiagobranquinho/Desktop/universidade/2ANO/2 semestre/DA/PROJECT_1/Projeto1_DA/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/tiagobranquinho/Desktop/universidade/2ANO/2 semestre/DA/PROJECT_1/Projeto1_DA/cmake-build-debug/CMakeFiles/Projeto1_DA.dir
