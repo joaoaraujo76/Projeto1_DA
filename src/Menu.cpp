@@ -68,7 +68,8 @@ void ExpressOrderMenu::display(){
     cout << "Express Orders Menu:" << endl;
     cout << "1 - Minimize average delivery time" << endl;
     cout << "2 - View Information" << endl;
-    cout << "3 - Settings" << endl;
+    cout << "3 - Jump to next working day" << endl;
+    cout << "4 - Settings" << endl;
     cout << "0 - Exit" << endl;
     cout << endl;
 }
@@ -85,6 +86,10 @@ Menu *ExpressOrderMenu::nextMenu() {
             return this;
         }
         case 3: {
+            app.nextExpressDay();
+            return this;
+        }
+        case 4: {
             return new ExpressSettingsMenu(app);
         }
         case 0: return nullptr;
@@ -96,8 +101,9 @@ ExpressSettingsMenu::ExpressSettingsMenu(App &app): Menu(app){}
 
 void ExpressSettingsMenu::display(){
     cout << endl;
-    cout << "Main Menu:" << endl;
-    cout << "1 - Change Working time (curr: " << app.getWorkingTime() << " hours)" << endl;
+    cout << "Express Orders Settings Menu:" << endl;
+    cout << "1 - Change Working time (curr: " << app.getWorkingTime()/3600 << " hours)" << endl;
+    cout << "2 - Change Max Express Delivery time (curr: " << app.getMaxExpressDuration()/60 << " minutes)" << endl;
     cout << "0 - Exit" << endl;
     cout << endl;
 }
@@ -111,6 +117,12 @@ Menu *ExpressSettingsMenu::nextMenu() {
                 time = readInt();
             } while (time > 24);
             app.setWorkingTime(time);
+            return this;
+        }
+        case 2:{
+            cout << "Please insert the new Max Express Delivery time: ";
+            time = readInt();
+            app.setMaxExpressDuration(time);
             return this;
         }
         case 0:

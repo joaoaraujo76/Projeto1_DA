@@ -1,5 +1,7 @@
 #include "../include/Van.h"
 
+using namespace std;
+
 Van::Van(int MAX_VOL, int MAX_WEIGHT, int COST) {
     this->MAX_VOL=MAX_VOL;
     this->MAX_WEIGHT=MAX_WEIGHT;
@@ -16,4 +18,9 @@ int Van::getWeight() const {
 
 int Van::getCost() const {
     return COST;
+}
+
+ostream &operator<<(ostream &os, const Van &o) {
+    os << o.getVolume() << " " << o.getWeight() << " " << o.getCost() << endl;
+    return os;
 }
