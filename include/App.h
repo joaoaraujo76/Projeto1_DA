@@ -38,6 +38,7 @@ public:
     void writeExpressOrders(int averageTime, size_t numDeliveries, int percentDeliveries);
     void saveFile(int file);
     void optimizeExpressDeliveries();
+    void dispatchOrdersToVans();
     std::vector<Van> &getVans();
     std::vector<Order> &getOrders() ;
     int getWorkingTime() const;

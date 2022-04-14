@@ -52,6 +52,8 @@ void MainMenu::display(){
 
 Menu *MainMenu::nextMenu() {
     switch (readInt()) {
+        case 1:
+            return new NormalOrderMenu(app);
         case 2:
             return new ExpressOrderMenu(app);
         case 0:
@@ -132,3 +134,25 @@ Menu *ExpressSettingsMenu::nextMenu() {
     }
 }
 
+NormalOrderMenu::NormalOrderMenu(App &app) : Menu(app) {
+
+}
+
+void NormalOrderMenu::display() {
+    cout << endl;
+    cout << "Normal Orders Management:" << endl;
+    cout << "1 - Dispatch orders to the vans " << endl;
+    cout << "0 - Exit" << endl;
+    cout << endl;
+}
+
+Menu *NormalOrderMenu::nextMenu() {
+    switch (readInt()) {
+        case 1:
+            app.dispatchOrdersToVans();
+        case 0:
+            return nullptr;
+        default:
+            return invalidInput();
+    }
+}

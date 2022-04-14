@@ -243,8 +243,48 @@ void App::resetOrders() {
 
 void App::nextExpressDay() {
     auto aux = orders;
-    for(auto itr = orders.begin(); itr != orders.end(); itr++){
-        if((*itr).isExpress())
+    for (auto itr = orders.begin(); itr != orders.end(); itr++) {
+        if ((*itr).isExpress())
             aux.erase(itr);
     }
+}
+
+void App::dispatchOrdersToVans() {
+    vector<int> vanRemainVol(vans.size());
+    vector<int> vanRemainWeight(vans.size());
+
+    sort(orders.begin(), orders.end(), [](const Order &lhs, const Order &rhs) {
+        return lhs.getVolume() > rhs.getVolume() || ( lhs.getVolume() == rhs.getVolume() && lhs.getWeight() > rhs.getWeight());
+    });
+    sort(vans.begin(), vans.end(), [](const Van &lhs, const Van &rhs) {
+        return lhs.getVolume() < rhs.getVolume() || ( lhs.getVolume() == rhs.getVolume() && lhs.getWeight() < rhs.getWeight());
+    });
+
+    int vansNo = 0;
+    int n = (int) orders.size();
+
+    for (int i = 0; i < n; i++) {
+        int j;
+        for (j = 0; j < vansNo; j++) {
+            if (vanRemainVol[j] >= orders[i].getVolume() && vanRemainWeight[j] >= orders[i].getWeight()) {
+                vanRemainVol[j] = vanRemainVol[j] - orders[i].getVolume();
+                vanRemainWeight[j] = vanRemainWeight[j] - orders[i].getWeight();
+                break;
+            }
+        }
+        if (j == vansNo) {
+            if (vansNo++ > vans.size()){
+                cout << "Not enough vans for all the orders" << endl;
+                cout << "There were left " << n-i+1 << " orders" << endl;
+                return;
+            }
+
+            int vanVol = vans[vansNo].getVolume();
+            int vanWeight = vans[vansNo].getWeight();
+            vanRemainVol[vansNo] = vanVol - orders[i].getVolume();
+            vanRemainWeight[vansNo] = vanWeight - orders[i].getWeight();
+            vansNo++;
+        }
+    }
+    cout << "Number of vans required: " << vansNo;
 }

@@ -31,6 +31,13 @@ public:
     Menu *nextMenu() override;
 };
 
+class NormalOrderMenu: public Menu{
+public:
+    explicit NormalOrderMenu(App &app);
+    void display() override;
+    Menu *nextMenu() override;
+};
+
 class ExpressSettingsMenu: public Menu{
 public:
     explicit ExpressSettingsMenu(App &app);
