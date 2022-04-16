@@ -18,7 +18,7 @@ private:
     std::string dataFolder = "../data/";
     std::vector<Order> orders;
     std::vector <Van> vans;
-    std::vector <std::string> filesname = {"orders.txt", "vans.txt", "express_deliveries.txt", "settings.txt"};
+    std::vector <std::string> filesname = {"orders.txt", "vans.txt", "express_deliveries.txt", "settings.txt" };
     int workTime;
     int maxExpressDuration;
 public:

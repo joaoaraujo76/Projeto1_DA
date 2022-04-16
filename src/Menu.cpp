@@ -2,7 +2,6 @@
 
 #include <iostream>
 
-
 using namespace std;
 
 Menu::~Menu() = default;
@@ -45,7 +44,9 @@ void MainMenu::display(){
     cout << endl;
     cout << "Main Menu:" << endl;
     cout << "1 - Normal Orders management (not done)" << endl;
-    cout << "2 - Express Orders management" << endl;
+    cout << "2 - Caso2 (not done)" << endl;
+
+    cout << "3 - Express Orders management" << endl;
     cout << "0 - Exit" << endl;
     cout << endl;
 }
@@ -55,6 +56,8 @@ Menu *MainMenu::nextMenu() {
         case 1:
             return new NormalOrderMenu(app);
         case 2:
+            return new NormalOrderMenu(app);
+        case 3:
             return new ExpressOrderMenu(app);
         case 0:
             return nullptr;
