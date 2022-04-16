@@ -2,11 +2,13 @@
 
 using namespace std;
 
-Order::Order(int VOLUME, int WEIGHT, int REWARD, int DURATION) {
+Order::Order(int VOLUME, int WEIGHT, int REWARD, int DURATION, bool express, bool shipped) {
     this->VOLUME=VOLUME;
     this->WEIGHT=WEIGHT;
     this->REWARD=REWARD;
     this->DURATION=DURATION;
+    this->express = express;
+    this->shipped = shipped;
 }
 
 int Order::getVolume() const{
@@ -26,6 +28,26 @@ int Order::getDuration() const {
 }
 
 ostream &operator<<(ostream &os, const Order &o) {
-    os << o.getVolume() << " " << o.getWeight() << " " << o.getReward() << " " << o.getDuration() << endl;
+    os << o.getVolume() << " " << o.getWeight() << " " << o.getReward() << " " << o.getDuration();
     return os;
+}
+
+bool Order::isExpress() {
+    return express;
+}
+
+void Order::setShipped() {
+    shipped = true;
+}
+
+void Order::setUnshipped() {
+    shipped = false;
+}
+
+bool Order::isShipped() {
+    return shipped;
+}
+
+void Order::setExpress(bool express) {
+    this->express = express;
 }

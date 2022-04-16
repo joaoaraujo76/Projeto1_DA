@@ -1,6 +1,6 @@
-Average time of each delivery: 233s
-Number of deliveries:          124
-Percentage of deliveries made: 38%
+Average time of each delivery: 223s
+Number of deliveries:          114
+Percentage of deliveries made: 25%
 13 25 550 100
 3 10 579 103
 20 26 1863 104
@@ -115,13 +115,3 @@ Percentage of deliveries made: 38%
 13 10 1614 331
 22 19 1628 332
 13 29 626 332
-22 25 914 337
-16 19 1193 338
-20 23 1325 338
-13 23 1714 347
-19 10 1820 348
-3 16 220 351
-19 29 1523 353
-23 23 881 353
-13 16 1838 354
-13 13 967 355
