@@ -254,10 +254,10 @@ void App::dispatchOrdersToVans() {
     vector<int> vanRemainWeight(vans.size());
 
     sort(orders.begin(), orders.end(), [](const Order &lhs, const Order &rhs) {
-        return lhs.getVolume() > rhs.getVolume() || ( lhs.getVolume() == rhs.getVolume() && lhs.getWeight() > rhs.getWeight());
+        return lhs.getVolume() * lhs.getWeight() > rhs.getVolume() * rhs.getWeight();
     });
     sort(vans.begin(), vans.end(), [](const Van &lhs, const Van &rhs) {
-        return lhs.getVolume() < rhs.getVolume() || ( lhs.getVolume() == rhs.getVolume() && lhs.getWeight() < rhs.getWeight());
+        return lhs.getVolume() * lhs.getWeight() > rhs.getWeight() * rhs.getVolume();
     });
 
     int vansNo = 0;
