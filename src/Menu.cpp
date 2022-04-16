@@ -86,7 +86,7 @@ Menu *ExpressOrderMenu::nextMenu() {
             return this;
         }
         case 2: {
-            for(const string &line : app.readExpressOrders())
+            for(const string &line : app.readExpressOrdersData())
                 cout << line << endl;
             return this;
         }
