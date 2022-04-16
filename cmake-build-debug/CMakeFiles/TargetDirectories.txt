@@ -1,3 +1,0 @@
-C:/Users/Lenovo/Desktop/DA/Projeto1_DA/cmake-build-debug/CMakeFiles/Projeto1_DA.dir
-C:/Users/Lenovo/Desktop/DA/Projeto1_DA/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/Lenovo/Desktop/DA/Projeto1_DA/cmake-build-debug/CMakeFiles/rebuild_cache.dir

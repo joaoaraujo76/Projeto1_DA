@@ -31,7 +31,7 @@ void App::readVans() {
     }
     string info;
 
-    getline(vansFile, info);
+    getline(vansFile, info); // trash
 
     while (vansFile >> maxVol >> maxWeight >> cost) {
         Van van(maxVol, maxWeight, cost);
@@ -51,7 +51,7 @@ void App::readOrders() {
     }
     string info;
 
-    getline(ordersFile, info);
+    getline(ordersFile, info); //trash
 
     while (ordersFile >> volume >> weight >> reward >> duration) {
         Order order(volume, weight, reward, duration);
@@ -79,41 +79,37 @@ void App::optimizeExpressDeliveries() {
         return writeExpressOrders(-1, aux_orders);
     for(const Order &o : orders){
         aux_orders.push_back(o);
+        orders.pop_back();
         currTime += o.getDuration();
         if(currTime > MAX_TIME){
             aux_orders.pop_back();
+            orders.push_back(o);
             return writeExpressOrders((int)(currTime/aux_orders.size()), aux_orders);
         }
     }
 }
 
 void App::writeExpressOrders(int time, const std::vector<Order>& currOrders) {
-    ofstream ordersFile;
-    ordersFile.open(dataFolder + filesname[2], ofstream::out | ofstream::trunc);
-    if(!ordersFile.is_open()){
-        ofstream ordersFile(dataFolder + filesname[2]);
-        ordersFile.open(dataFolder + filesname[2], ofstream::out | ofstream::trunc);
-    }
-    if (!ordersFile.is_open()) {
-        cerr << "Unable to open orders.txt";
-        exit(1);
-    }
+    fstream expressOrders;
+    clearFile(&expressOrders,2);
 
     if(time == -1){
-        ordersFile << "Impossible to deliver any order";
-        ordersFile.close();
+        expressOrders << "Impossible to deliver any order";
+        expressOrders.close();
         return;
     }
 
-    ordersFile << "Average time of each delivery: " << time << "s" << endl;
-    ordersFile << "Number of deliveries:          " << currOrders.size() << endl;
-    ordersFile << "Percentage of deliveries made: " << round(((double)currOrders.size() / (double)orders.size()) * 100) << "%" << endl;
+    expressOrders << "Average time of each delivery: " << time << "s" << endl;
+    expressOrders << "Number of deliveries:          " << currOrders.size() << endl;
+    expressOrders << "Percentage of deliveries made: " << round(((double)currOrders.size() / (double)orders.size()) * 100) << "%" << endl;
 
-    for(const Order &o : orders){
-        ordersFile << o;
+    for(const Order &o : currOrders){
+        expressOrders << o;
     }
 
-    ordersFile.close();
+    expressOrders.close();
+
+    updateOrders();
 }
 
 int App::getWorkingTime() const {
@@ -143,4 +139,33 @@ std::vector<std::string> App::readExpressOrders() {
     }
     expressOrdersFile.close();
     return data;
+}
+
+void App::setMaxExpressDuration(int maxExpressDuration) {
+    this->maxExpressDuration = maxExpressDuration;
+}
+
+void App::updateOrders() {
+    fstream normalOrders;
+    clearFile(&normalOrders,0);
+
+    for(const Order &o : orders){
+        normalOrders << o;
+    }
+
+    normalOrders.close();
+
+
+}
+
+void App::clearFile(fstream *file, const int FILE_NUM) {
+    file->open(dataFolder + filesname[FILE_NUM], ofstream::out | ofstream::trunc);
+    if(!file->is_open()){
+        ofstream ordersFile(dataFolder + filesname[FILE_NUM]);
+        ordersFile.open(dataFolder + filesname[2], ofstream::out | ofstream::trunc);
+    }
+    if (!file->is_open()) {
+        cerr << "Unable to open orders.txt";
+        exit(1);
+    }
 }
