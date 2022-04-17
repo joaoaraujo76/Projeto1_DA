@@ -256,9 +256,9 @@ void App::dispatchOrdersToVans() {
 
     int volVantotal = 0;
     int weightVanTotal = 0;
-    for(auto & van : vans){
-        volVantotal = van.getVolume();
-        weightVanTotal = van.getWeight();
+    for (auto &van: vans) {
+        volVantotal += van.getVolume();
+        weightVanTotal += van.getWeight();
     }
     int volVanMedium = (int) volVantotal / vans.size();
     int weightVanMedium = (int) weightVanTotal / vans.size();
@@ -266,22 +266,22 @@ void App::dispatchOrdersToVans() {
 
     int volOrderTotal = 0;
     int weightOrderTotal = 0;
-    for(auto & order : orders){
-        volOrderTotal = order.getVolume();
-        weightOrderTotal = order.getWeight();
+    for (auto &order: orders) {
+        volOrderTotal += order.getVolume();
+        weightOrderTotal += order.getWeight();
     }
-    int volOrderMedium = (int) volOrderTotal/ orders.size();
+    int volOrderMedium = (int) volOrderTotal / orders.size();
     int weightOrderMedium = (int) weightOrderTotal / orders.size();
 
-    int ratioVol = volOrderMedium / volVanMedium;
-    int ratioWeight = weightOrderMedium / weightVanMedium;
+    int ratioVol = volVanMedium / volOrderMedium;
+    int ratioWeight = weightVanMedium / weightOrderMedium;
 
 
     sort(orders.begin(), orders.end(), [](const Order &lhs, const Order &rhs) {
-        return lhs.getVolume() * lhs.getWeight() < rhs.getVolume() * rhs.getWeight();
+        return (lhs.getVolume() * lhs.getWeight()) > (rhs.getVolume() * rhs.getWeight());
     });
     sort(vans.begin(), vans.end(), [](const Van &lhs, const Van &rhs) {
-        return lhs.getVolume() * lhs.getWeight() > rhs.getWeight() * rhs.getVolume();
+        return (lhs.getVolume() * lhs.getWeight()) >= (rhs.getWeight() * rhs.getVolume());
     });
 
     int vansNo = 0;
@@ -297,9 +297,9 @@ void App::dispatchOrdersToVans() {
             }
         }
         if (j == vansNo) {
-            if (vansNo++ > vans.size()){
+            if (vansNo + 1 > vans.size()) {
                 cout << "Not enough vans for all the orders" << endl;
-                cout << "There were left " << n-i+1 << " orders" << endl;
+                cout << "There were left " << n - i + 1 << " orders" << endl;
                 return;
             }
 
