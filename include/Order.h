@@ -5,11 +5,12 @@
 
 class Order {
 public:
-    Order(int VOLUME, int WEIGHT, int REWARD, int DURATION, bool express, bool shipped);
+    Order(int ID, int VOLUME, int WEIGHT, int REWARD, int DURATION, bool express, bool shipped);
     int getVolume() const;
     int getWeight() const;
     int getReward() const;
     int getDuration() const;
+    int getID() const;
     bool isExpress();
     void setExpress(bool express);
     void setShipped();
@@ -17,6 +18,7 @@ public:
     bool isShipped();
     friend std::ostream& operator<<(std::ostream& os, const Order &o);
 private:
+    int ID;
     int VOLUME;
     int WEIGHT;
     int REWARD;

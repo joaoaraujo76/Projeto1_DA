@@ -4,7 +4,7 @@
 
 using namespace std;
 
-Menu::~Menu() = default;git
+Menu::~Menu() = default;
 
 Menu::Menu(App &app): app(app) {}
 

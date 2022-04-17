@@ -18,7 +18,7 @@ private:
     std::string dataFolder = "../data/";
     std::vector<Order> orders;
     std::vector <Van> vans;
-    std::vector <std::string> filesname = {"orders.txt", "vans.txt", "express_deliveries.txt", "settings.txt" };
+    std::vector <std::string> filesname = {"orders.txt", "vans.txt", "express_deliveries.txt", "settings.txt", "min_vans.txt"};
     int workTime;
     int maxExpressDuration;
 public:
@@ -37,6 +37,7 @@ public:
     void writeOrders();
     void writeSettings();
     void writeExpressOrders(int averageTime, size_t numDeliveries, int percentDeliveries);
+    void writeEfficientVans(bool condition, int vansNo, int ordersLeft, float percentVans );
     void saveFile(int file);
     void optimizeExpressDeliveries();
     void dispatchOrdersToVans();

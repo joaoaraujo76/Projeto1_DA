@@ -1,2 +1,0 @@
-work time (hours) -10
-max express delivery duration (minutes) -4
