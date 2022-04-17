@@ -4,7 +4,7 @@
 
 using namespace std;
 
-Menu::~Menu() = default;
+Menu::~Menu() = default;git
 
 Menu::Menu(App &app): app(app) {}
 
@@ -86,7 +86,7 @@ Menu *ExpressOrderMenu::nextMenu() {
             return this;
         }
         case 2: {
-            for(const string &line : app.readExpressOrders())
+            for(const string &line : app.readExpressOrdersData())
                 cout << line << endl;
             return this;
         }

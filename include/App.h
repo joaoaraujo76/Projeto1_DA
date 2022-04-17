@@ -25,11 +25,12 @@ public:
     App();
     ~App();
     void readFile(int file);
-    void clearFile(std::fstream *file, int FILE_NUM);
+    bool clearFile(std::fstream *file, int FILE_NUM);
+    bool createFile(std::fstream *file, int FILE_NUM);
     void readVans();
     void readOrders();
     void readSettings();
-    std::vector<std::string> readExpressOrders();
+    std::vector<std::string> readExpressOrdersData();
     void loadData();
     void saveData();
     void writeVans();
