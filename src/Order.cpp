@@ -9,6 +9,7 @@ Order::Order(int ID, int VOLUME, int WEIGHT, int REWARD, int DURATION, bool expr
     this->DURATION=DURATION;
     this->express = express;
     this->shipped = shipped;
+    this->ID = ID;
 }
 
 int Order::getVolume() const{

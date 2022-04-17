@@ -32,7 +32,7 @@ ostream &operator<<(ostream &os, const Van &o) {
     return os;
 }
 
-void Van::add(Order o) {
+void Van::add(Order &o) {
     belong_orders.push_back(o);
 }
 
