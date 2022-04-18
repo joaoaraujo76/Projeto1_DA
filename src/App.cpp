@@ -125,13 +125,14 @@ void App::writeExpressOrders(int averageTime, size_t numDeliveries, int percentD
     }
     expressOrdersFile << "Average time of each delivery: " << averageTime << "s" << endl;
     expressOrdersFile << "Number of deliveries:          " << numDeliveries << endl;
-    expressOrdersFile << "Percentage of deliveries made: " << percentDeliveries << "%" << endl;
+    expressOrdersFile << "Percentage of deliveries made: " << percentDeliveries << "%\n\n";
 
     sort(express_orders.begin(), express_orders.end(), [](Order &lhs, Order &rhs) {
         return lhs.isShipped() > rhs.isShipped();
     });
+
     for(Order &order : express_orders){
-            expressOrdersFile << order << endl;
+            expressOrdersFile << order;
     }
     expressOrdersFile.close();
 }
@@ -229,7 +230,7 @@ void App::dispatchOrdersToVans() {
         return (lhs.getVolume() * lhs.getWeight()) >= (rhs.getWeight() * rhs.getVolume());
     });
 
-    int ordersLeft;
+    int ordersLeft = 0;
     int vansNo = 0;
     int n = (int) normal_orders.size();
 
@@ -273,11 +274,11 @@ void App::writeEfficientVans(int vansNo, int ordersLeft) {
         EfficientVans << "Impossible to deliver all orders: " << ordersLeft << " orders left" << endl;
     }
     else{
-        EfficientVans << "Delivered all "<< ordersLeft << "orders" << endl;
+        EfficientVans << "Delivered all orders" << endl;
     }
     EfficientVans << "Used " << vansNo << "/" << vans.size() << " vans" << endl;
-    EfficientVans << "Percent of vans used: " << percentVans << "%" << endl;
-    EfficientVans << "Vans used and their orders:";
+    EfficientVans << "Percent of vans used: " << percentVans << "%\n" << endl;
+    EfficientVans << "Vans used and their orders:\n";
 
     for(int i = 0 ; i < vansNo; i++){
         EfficientVans << endl << "Van id: " <<  vans[i].getID() << " its orders: ";
