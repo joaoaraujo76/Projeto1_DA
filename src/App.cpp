@@ -284,6 +284,7 @@ void App::dispatchOrdersToVans() {
             if (vansNo + 1 > vans.size()) {
                 ordersLeft = n - i + 1;
                 writeEfficientVans(vansNo,ordersLeft);
+                cout << "ardeu"<< endl;
                 return;
             }
 
