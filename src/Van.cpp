@@ -36,7 +36,7 @@ void Van::add(Order &o) {
     belong_orders.push_back(o);
 }
 
-std::vector<Order> Van::get_belong_orders() {
+std::vector<Order> &Van::get_belong_orders() {
     return belong_orders;
 }
 

@@ -13,7 +13,7 @@ public:
     int getCost() const;
     int getID() const;
     void add(Order &o);
-    std::vector <Order> get_belong_orders();
+    std::vector <Order> &get_belong_orders();
     friend std::ostream& operator<<(std::ostream& os, const Van &o);
 private:
     int ID;

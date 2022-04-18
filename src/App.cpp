@@ -222,12 +222,11 @@ void App::dispatchOrdersToVans() {
     vector<int> vanRemainVol(vans.size());
     vector<int> vanRemainWeight(vans.size());
 
-
     sort(normal_orders.begin(), normal_orders.end(), [](const Order &lhs, const Order &rhs) {
-        return (lhs.getVolume() * lhs.getWeight()) > (rhs.getVolume() * rhs.getWeight());
+        return (lhs.getVolume() * lhs.getWeight()) > (rhs.getVolume() * rhs.getWeight()) || ((lhs.getVolume() * lhs.getWeight()) == (rhs.getWeight() * rhs.getVolume()) && lhs.getID()>rhs.getID());
     });
     sort(vans.begin(), vans.end(), [](const Van &lhs, const Van &rhs) {
-        return (lhs.getVolume() * lhs.getWeight()) >= (rhs.getWeight() * rhs.getVolume());
+        return (lhs.getVolume() * lhs.getWeight()) > (rhs.getWeight() * rhs.getVolume()) || ((lhs.getVolume() * lhs.getWeight()) == (rhs.getWeight() * rhs.getVolume()) && lhs.getID()>rhs.getID());
     });
 
     int ordersLeft = 0;
