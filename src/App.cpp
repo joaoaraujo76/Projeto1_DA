@@ -39,29 +39,34 @@ void App::readVans() {
 }
 
 void App::readOrders() {
+
     fstream ordersFile;
+    ofstream normalOrders(dataFolder + filesname[5]);
+    ofstream expressOrders(dataFolder + filesname[2]);
+
     int volume, weight, reward, duration, id = 0;
     bool express;
 
-    for(int fileNum = 0; fileNum <=2; fileNum += 2){
-        if(createFile(&ordersFile, fileNum) && fileNum == 0)
-            cerr << "Unable to open orders.txt" << endl;
-        string info;
+    if(createFile(&ordersFile, 0))
+        cerr << "Unable to open vans.txt" << endl;
+    string info;
+    getline(ordersFile, info); // trash
 
-        if(fileNum == 0)
-            getline(ordersFile, info);
-        else
-            for(int times = 0; times < 3; times++){
-                getline(ordersFile, info);
-            }
-
-        while (ordersFile >> volume >> weight >> reward >> duration) {
-            express = duration <= maxExpressDuration;
-            Order order(id++, volume, weight, reward, duration, express, false);
-            orders.push_back(order);
+    while (ordersFile >> volume >> weight >> reward >> duration) {
+        express = duration <= maxExpressDuration;
+        Order order(id++, volume, weight, reward, duration, express, false);
+        if(!express){
+            normalOrders << order;
+            express_orders.push_back(order);
         }
-        ordersFile.close();
+        else{
+            expressOrders << order;
+            normal_orders.push_back(order);
+        }
     }
+    expressOrders.close();
+    normalOrders.close();
+    ordersFile.close();
 }
 
 void App::readSettings() {
@@ -88,35 +93,26 @@ std::vector<Van> &App::getVans() {
     return vans;
 }
 
-std::vector<Order> &App::getOrders() {
-    return orders;
-}
-
 void App::optimizeExpressDeliveries() {
     resetOrders();
     int shippedExpressOrders = 0;
     int currTime = 0;
-    sort(orders.begin(), orders.end(), [](Order &lhs, Order &rhs) {
+    sort(express_orders.begin(), express_orders.end(), [](Order &lhs, Order &rhs) {
         return lhs.getDuration() < rhs.getDuration();
     });
-    if (orders.front().getDuration() > workTime)
+    if (express_orders.front().getDuration() > workTime)
         return writeExpressOrders(-1, 0, 0);
-    for (Order &o: orders) {
-        if (!o.isExpress())
-            continue;
-        shippedExpressOrders++;
-        o.setShipped();
+    for (Order &o: express_orders) {
         currTime += o.getDuration();
-        if (currTime > workTime) {
-            shippedExpressOrders--;
-            o.setUnshipped();
-            currTime -= o.getDuration();
+        if (currTime + o.getDuration() > workTime) {
             break;
         }
+        currTime += o.getDuration();
+        shippedExpressOrders++;
+        o.setShipped();
     }
     if(shippedExpressOrders!=0)
-        writeExpressOrders((int) (currTime / shippedExpressOrders), shippedExpressOrders, (int)round(((double)shippedExpressOrders / (double)orders.size()) * 100));
-    writeOrders();
+        writeExpressOrders((int) (currTime / shippedExpressOrders), shippedExpressOrders, (int)round(((double)shippedExpressOrders / (double)express_orders.size()) * 100));
 }
 
 void App::writeExpressOrders(int averageTime, size_t numDeliveries, int percentDeliveries) {
@@ -130,28 +126,14 @@ void App::writeExpressOrders(int averageTime, size_t numDeliveries, int percentD
     expressOrdersFile << "Average time of each delivery: " << averageTime << "s" << endl;
     expressOrdersFile << "Number of deliveries:          " << numDeliveries << endl;
     expressOrdersFile << "Percentage of deliveries made: " << percentDeliveries << "%" << endl;
-    for(Order &order : orders){
-        if(order.isShipped() && order.isExpress())
+
+    sort(express_orders.begin(), express_orders.end(), [](Order &lhs, Order &rhs) {
+        return lhs.isShipped() > rhs.isShipped();
+    });
+    for(Order &order : express_orders){
             expressOrdersFile << order << endl;
     }
     expressOrdersFile.close();
-}
-
-void App::writeOrders() {
-    int counter = 0;
-    fstream ordersFile;
-    clearFile(&ordersFile,0);
-    ordersFile << "volume peso recompensa duração(s) \n";
-    for(Order &order : orders){
-        counter++;
-        if(!order.isExpress() && !order.isShipped()){
-            if(counter == orders.size())
-                ordersFile << order;
-            else
-                ordersFile << order << endl;
-        }
-    }
-    ordersFile.close();
 }
 
 void App::readExpressOrdersData() {
@@ -190,21 +172,6 @@ bool App::clearFile(fstream *file, int FILE_NUM) {
     return exists;
 }
 
-void App::saveData() {
-    for (int file = 0; file < filesname.size(); file++){
-        saveFile(file);
-    }
-}
-
-void App::saveFile(int file) {
-    switch (file) {
-        case 0: writeVans(); break;
-        case 1: writeOrders(); break;
-        case 3: writeSettings(); break;
-        default: break;
-    }
-}
-
 void App::writeVans() {
     fstream vansFile;
     clearFile(&vansFile,1);
@@ -232,15 +199,19 @@ int App::getMaxExpressDuration() {
 }
 
 void App::resetOrders() {
-    for(Order &order : orders){
+    for(Order &order : express_orders){
+        order.setExpress(order.getDuration() <= maxExpressDuration);
+        order.setUnshipped();
+    }
+    for(Order &order : normal_orders){
         order.setExpress(order.getDuration() <= maxExpressDuration);
         order.setUnshipped();
     }
 }
 
 void App::nextExpressDay() {
-    auto aux = orders;
-    for (auto itr = orders.begin(); itr != orders.end(); itr++) {
+    auto aux = express_orders;
+    for (auto itr = express_orders.begin(); itr != express_orders.end(); itr++) {
         if ((*itr).isExpress())
             aux.erase(itr);
     }
@@ -251,7 +222,7 @@ void App::dispatchOrdersToVans() {
     vector<int> vanRemainWeight(vans.size());
 
 
-    sort(orders.begin(), orders.end(), [](const Order &lhs, const Order &rhs) {
+    sort(normal_orders.begin(), normal_orders.end(), [](const Order &lhs, const Order &rhs) {
         return (lhs.getVolume() * lhs.getWeight()) > (rhs.getVolume() * rhs.getWeight());
     });
     sort(vans.begin(), vans.end(), [](const Van &lhs, const Van &rhs) {
@@ -260,15 +231,15 @@ void App::dispatchOrdersToVans() {
 
     int ordersLeft;
     int vansNo = 0;
-    int n = (int) orders.size();
+    int n = (int) normal_orders.size();
 
     for (int i = 0; i < n; i++) {
         int j;
         for (j = 0; j < vansNo; j++) {
-            if (vanRemainVol[j] >= orders[i].getVolume() && vanRemainWeight[j] >= orders[i].getWeight() && !orders[i].isExpress()) {
-                vanRemainVol[j] = vanRemainVol[j] - orders[i].getVolume();
-                vanRemainWeight[j] = vanRemainWeight[j] - orders[i].getWeight();
-                vans[j].add(orders[i]);
+            if (vanRemainVol[j] >= normal_orders[i].getVolume() && vanRemainWeight[j] >= normal_orders[i].getWeight() && !normal_orders[i].isExpress()) {
+                vanRemainVol[j] = vanRemainVol[j] - normal_orders[i].getVolume();
+                vanRemainWeight[j] = vanRemainWeight[j] - normal_orders[i].getWeight();
+                vans[j].add(normal_orders[i]);
                 break;
             }
         }
@@ -279,12 +250,12 @@ void App::dispatchOrdersToVans() {
                 return;
             }
 
-            if(!orders[i].isExpress()){
+            if(!getNormalOrders()[i].isExpress()){
                 int vanVol = vans[vansNo].getVolume();
                 int vanWeight = vans[vansNo].getWeight();
-                vanRemainVol[vansNo] = vanVol - orders[i].getVolume();
-                vanRemainWeight[vansNo] = vanWeight - orders[i].getWeight();
-                vans[j].add(orders[i]);
+                vanRemainVol[vansNo] = vanVol - getNormalOrders()[i].getVolume();
+                vanRemainWeight[vansNo] = vanWeight - getNormalOrders()[i].getWeight();
+                vans[j].add(getNormalOrders()[i]);
                 vansNo++;
             }
         }
@@ -362,6 +333,14 @@ void App::readMinVansData() {
         }
     }
     minVansFile.close();
+}
+
+std::vector<Order> &App::getNormalOrders() {
+    return normal_orders;
+}
+
+std::vector<Order> &App::getExpressOrders() {
+    return express_orders;
 }
 
 

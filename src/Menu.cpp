@@ -112,12 +112,14 @@ Menu *ExpressSettingsMenu::nextMenu() {
                 time = readInt();
             } while (time > 24);
             app.setWorkingTime(time);
+            app.readFile(2);
             return this;
         }
         case 2:{
             cout << "Please insert the new Max Express Delivery time: ";
             time = readInt();
             app.setMaxExpressDuration(time);
+            app.readFile(2);
             return this;
         }
         case 0:
@@ -168,6 +170,7 @@ Menu *MinVansMenu::nextMenu() {
     switch (readInt()) {
         case 1:
             app.dispatchOrdersToVans();
+            app.clearOrdersFromVans();
             return this;
         case 2:
             app.readMinVansData();

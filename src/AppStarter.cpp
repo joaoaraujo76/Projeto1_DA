@@ -21,5 +21,4 @@ void AppStarter::start() {
             menuStack.pop();
         }
     }
-    app.saveData();
 }

@@ -16,9 +16,10 @@ class App {
 
 private:
     std::string dataFolder = "../data/";
-    std::vector<Order> orders;
+    std::vector<Order> normal_orders;
+    std::vector<Order> express_orders;
     std::vector <Van> vans;
-    std::vector <std::string> filesname = {"orders.txt", "vans.txt", "express_deliveries.txt", "settings.txt", "min_vans.txt"};
+    std::vector <std::string> filesname = {"orders.txt", "vans.txt", "express_orders.txt", "settings.txt", "min_vans.txt", "normal_orders.txt"};
     int workTime;
     int maxExpressDuration;
 public:
@@ -35,15 +36,14 @@ public:
     void loadData();
     void saveData();
     void writeVans();
-    void writeOrders();
     void writeSettings();
     void writeExpressOrders(int averageTime, size_t numDeliveries, int percentDeliveries);
     void writeEfficientVans(int vansNo, int ordersLeft);
-    void saveFile(int file);
     void optimizeExpressDeliveries();
     void dispatchOrdersToVans();
     std::vector<Van> &getVans();
-    std::vector<Order> &getOrders() ;
+    std::vector<Order> &getNormalOrders() ;
+    std::vector<Order> &getExpressOrders() ;
     int getWorkingTime() const;
     void setWorkingTime(int workTime);
     int getMaxExpressDuration();

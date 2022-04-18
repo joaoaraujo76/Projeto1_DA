@@ -34,7 +34,9 @@ int Order::getID() const {
 }
 
 ostream &operator<<(ostream &os, const Order &o) {
-    os << o.getVolume() << " " << o.getWeight() << " " << o.getReward() << " " << o.getDuration();
+    string shipped;
+    o.shipped? shipped = "True" : shipped = "False";
+    os << "ID: " << o.getID() << " Vol: " << o.getVolume() << " Weight: " << o.getWeight() << " Reward: " << o.getWeight() << " Duration: " << o.getDuration() <<  " Shipped: "  << shipped << endl ;
     return os;
 }
 
