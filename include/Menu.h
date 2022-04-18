@@ -45,5 +45,19 @@ public:
     Menu *nextMenu() override;
 };
 
+class MinVansMenu: public Menu{
+public:
+    explicit MinVansMenu(App &app);
+    void display() override;
+    Menu *nextMenu() override;
+};
+
+class MaxProfitMenu: public Menu{
+public:
+    explicit MaxProfitMenu(App &app);
+    void display() override;
+    Menu *nextMenu() override;
+};
+
 
 #endif //PROJETO1_DA_MENU_H

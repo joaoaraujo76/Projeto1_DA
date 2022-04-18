@@ -44,9 +44,7 @@ void MainMenu::display(){
     cout << endl;
     cout << "Main Menu:" << endl;
     cout << "1 - Normal Orders management (not done)" << endl;
-    cout << "2 - Caso2 (not done)" << endl;
-
-    cout << "3 - Express Orders management" << endl;
+    cout << "2 - Express Orders management" << endl;
     cout << "0 - Exit" << endl;
     cout << endl;
 }
@@ -56,8 +54,6 @@ Menu *MainMenu::nextMenu() {
         case 1:
             return new NormalOrderMenu(app);
         case 2:
-            return new NormalOrderMenu(app);
-        case 3:
             return new ExpressOrderMenu(app);
         case 0:
             return nullptr;
@@ -71,10 +67,9 @@ ExpressOrderMenu::ExpressOrderMenu(App &app): Menu(app){}
 void ExpressOrderMenu::display(){
     cout << endl;
     cout << "Express Orders Menu:" << endl;
-    cout << "1 - Minimize average delivery time" << endl;
+    cout << "1 - Minimize average express delivery time" << endl;
     cout << "2 - View Information" << endl;
-    cout << "3 - Jump to next working day" << endl;
-    cout << "4 - Settings" << endl;
+    cout << "3 - Settings" << endl;
     cout << "0 - Exit" << endl;
     cout << endl;
 }
@@ -91,10 +86,6 @@ Menu *ExpressOrderMenu::nextMenu() {
             return this;
         }
         case 3: {
-            app.nextExpressDay();
-            return this;
-        }
-        case 4: {
             return new ExpressSettingsMenu(app);
         }
         case 0: return nullptr;
@@ -144,7 +135,8 @@ NormalOrderMenu::NormalOrderMenu(App &app) : Menu(app) {
 void NormalOrderMenu::display() {
     cout << endl;
     cout << "Normal Orders Management:" << endl;
-    cout << "1 - Dispatch orders to the vans " << endl;
+    cout << "1 - Min vans scenario" << endl;
+    cout << "2 - Max profit scenario (not done)" << endl;
     cout << "0 - Exit" << endl;
     cout << endl;
 }
@@ -152,7 +144,60 @@ void NormalOrderMenu::display() {
 Menu *NormalOrderMenu::nextMenu() {
     switch (readInt()) {
         case 1:
+            return new MinVansMenu(app);
+        case 0:
+            return nullptr;
+        default:
+            return invalidInput();
+    }
+}
+
+MinVansMenu::MinVansMenu(App &app) : Menu(app) {
+
+}
+
+void MinVansMenu::display() {
+    cout << endl;
+    cout << "Min Vans Scenario:" << endl;
+    cout << "1 - Dispatch Orders to Vans" << endl;
+    cout << "2 - See Information" << endl;
+    cout << "0 - Exit" << endl;
+    cout << endl;
+}
+
+Menu *MinVansMenu::nextMenu() {
+    switch (readInt()) {
+        case 1:
             app.dispatchOrdersToVans();
+            return this;
+        case 2:
+            //app.rea;
+            return this;
+        case 0:
+            return nullptr;
+        default:
+            return invalidInput();
+    }
+}
+
+MaxProfitMenu::MaxProfitMenu(App &app) : Menu(app) {
+
+}
+
+void MaxProfitMenu::display() {
+    cout << endl;
+    cout << "Max Profit Scenario: (not done)" << endl;
+    cout << "1 - Dispatch Orders to Vans" << endl;
+    cout << "2 - See Information" << endl;
+    cout << "0 - Exit" << endl;
+    cout << endl;
+}
+
+Menu *MaxProfitMenu::nextMenu() {
+    switch (readInt()) {
+        case 1:
+            //scenario2 func
+            return this;
         case 0:
             return nullptr;
         default:

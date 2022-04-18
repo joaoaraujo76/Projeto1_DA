@@ -37,7 +37,7 @@ public:
     void writeOrders();
     void writeSettings();
     void writeExpressOrders(int averageTime, size_t numDeliveries, int percentDeliveries);
-    void writeEfficientVans(bool condition, int vansNo, int ordersLeft, float percentVans );
+    void writeEfficientVans(int vansNo, int ordersLeft);
     void saveFile(int file);
     void optimizeExpressDeliveries();
     void dispatchOrdersToVans();

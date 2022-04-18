@@ -257,8 +257,6 @@ void App::nextExpressDay() {
 void App::dispatchOrdersToVans() {
     vector<int> vanRemainVol(vans.size());
     vector<int> vanRemainWeight(vans.size());
-    bool condition = true;
-    float percent_vans;
 
 
     sort(orders.begin(), orders.end(), [](const Order &lhs, const Order &rhs) {
@@ -275,7 +273,7 @@ void App::dispatchOrdersToVans() {
     for (int i = 0; i < n; i++) {
         int j;
         for (j = 0; j < vansNo; j++) {
-            if (vanRemainVol[j] >= orders[i].getVolume() && vanRemainWeight[j] >= orders[i].getWeight()) {
+            if (vanRemainVol[j] >= orders[i].getVolume() && vanRemainWeight[j] >= orders[i].getWeight() && !orders[i].isExpress()) {
                 vanRemainVol[j] = vanRemainVol[j] - orders[i].getVolume();
                 vanRemainWeight[j] = vanRemainWeight[j] - orders[i].getWeight();
                 vans[j].add(orders[i]);
@@ -285,46 +283,38 @@ void App::dispatchOrdersToVans() {
         if (j == vansNo) {
             if (vansNo + 1 > vans.size()) {
                 ordersLeft = n - i + 1;
-                condition = false;
-                cout << "Not enough vans for all the orders" << endl;
-                cout << "There were left " << ordersLeft << " orders" << endl;
+                writeEfficientVans(vansNo,ordersLeft);
                 return;
             }
 
-            int vanVol = vans[vansNo].getVolume();
-            int vanWeight = vans[vansNo].getWeight();
-            vanRemainVol[vansNo] = vanVol - orders[i].getVolume();
-            vanRemainWeight[vansNo] = vanWeight - orders[i].getWeight();
-            vans[j].add(orders[i]);
-            vansNo++;
+            if(!orders[i].isExpress()){
+                int vanVol = vans[vansNo].getVolume();
+                int vanWeight = vans[vansNo].getWeight();
+                vanRemainVol[vansNo] = vanVol - orders[i].getVolume();
+                vanRemainWeight[vansNo] = vanWeight - orders[i].getWeight();
+                vans[j].add(orders[i]);
+                vansNo++;
+            }
         }
     }
-    cout << "Number of vans required: " << vansNo;
-    percent_vans = (float) vansNo / vans.size() * 100;
 
-    writeEfficientVans(condition,vansNo,ordersLeft,percent_vans);
+    writeEfficientVans(vansNo,ordersLeft);
 }
 
 
-void App::writeEfficientVans(bool condition, int vansNo, int ordersLeft, float percentVans) {
+void App::writeEfficientVans(int vansNo, int ordersLeft) {
     fstream EfficientVans;
     clearFile(&EfficientVans,4);
-    if(!condition){
-        EfficientVans << "Impossible to deliver all orders \n";
-        EfficientVans << ordersLeft << " left \n";
-        EfficientVans << "Used " << vansNo << "/" << vansNo << " vans \n";
-        for(int i = 0 ; i < vansNo;i++){
-            EfficientVans << "Van ID: " << vans[i].getID();
-        }
-        EfficientVans.close();
-        return;
+    float percentVans = (float) vansNo / vans.size() * 100;
+    if(ordersLeft > 0){
+        EfficientVans << "Impossible to deliver all orders: " << ordersLeft << " orders left" << endl;
     }
-    EfficientVans << "Used " << vansNo << "/" << vans.size() << " vans \n";
-    EfficientVans << "Percent of vans used: " << percentVans << "% \n\n";
-    EfficientVans << "Vans used and their orders: \n";
+    EfficientVans << "Used " << vansNo << "/" << vans.size() << " vans" << endl;
+    EfficientVans << "Percent of vans used: " << percentVans << "%" << endl;
+    EfficientVans << "Vans used and their orders:";
 
     for(int i = 0 ; i < vansNo; i++){
-        EfficientVans << "\nVan id: " <<  vans[i].getID() << " its orders: ";
+        EfficientVans << endl << "Van id: " <<  vans[i].getID() << " its orders: ";
         for(int j = 0 ; j < vans[i].get_belong_orders().size(); j++){
             EfficientVans << vans[i].get_belong_orders()[j].getID() << " ";
         }
