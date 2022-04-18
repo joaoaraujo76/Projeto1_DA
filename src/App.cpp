@@ -57,11 +57,11 @@ void App::readOrders() {
         Order order(id++, volume, weight, reward, duration, express, false);
         if(!express){
             normalOrders << order;
-            express_orders.push_back(order);
+            normal_orders.push_back(order);
         }
         else{
             expressOrders << order;
-            normal_orders.push_back(order);
+            express_orders.push_back(order);
         }
     }
     expressOrders.close();
@@ -253,9 +253,9 @@ void App::dispatchOrdersToVans() {
             if(!getNormalOrders()[i].isExpress()){
                 int vanVol = vans[vansNo].getVolume();
                 int vanWeight = vans[vansNo].getWeight();
-                vanRemainVol[vansNo] = vanVol - getNormalOrders()[i].getVolume();
-                vanRemainWeight[vansNo] = vanWeight - getNormalOrders()[i].getWeight();
-                vans[j].add(getNormalOrders()[i]);
+                vanRemainVol[vansNo] = vanVol - normal_orders[i].getVolume();
+                vanRemainWeight[vansNo] = vanWeight - normal_orders[i].getWeight();
+                vans[j].add(normal_orders[i]);
                 vansNo++;
             }
         }
