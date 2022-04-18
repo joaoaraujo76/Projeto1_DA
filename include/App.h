@@ -30,6 +30,7 @@ public:
     bool createFile(std::fstream *file, int FILE_NUM);
     void readVans();
     void readOrders();
+    void clearOrders();
     void readSettings();
     void readExpressOrdersData();
     void readMinVansData();
@@ -48,9 +49,7 @@ public:
     void setWorkingTime(int workTime);
     int getMaxExpressDuration();
     void setMaxExpressDuration(int maxExpressDuration);
-    void resetOrders();
     void nextExpressDay();
     void clearOrdersFromVans();
 };
-
 #endif //PROJETO1_DA_APP_H

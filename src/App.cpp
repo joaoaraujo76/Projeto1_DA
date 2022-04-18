@@ -2,6 +2,9 @@
 
 using namespace std;
 
+int Order::order_nID = 0;
+
+
 App::App() = default;
 App::~App() = default;
 
@@ -39,12 +42,12 @@ void App::readVans() {
 }
 
 void App::readOrders() {
-
+    clearOrders();
     fstream ordersFile;
     ofstream normalOrders(dataFolder + filesname[5]);
     ofstream expressOrders(dataFolder + filesname[2]);
 
-    int volume, weight, reward, duration, id = 0;
+    int volume, weight, reward, duration;
     bool express;
 
     if(createFile(&ordersFile, 0))
@@ -54,7 +57,7 @@ void App::readOrders() {
 
     while (ordersFile >> volume >> weight >> reward >> duration) {
         express = duration <= maxExpressDuration;
-        Order order(id++, volume, weight, reward, duration, express, false);
+        Order order(volume, weight, reward, duration, express, false);
         if(!express){
             normalOrders << order;
             normal_orders.push_back(order);
@@ -94,7 +97,7 @@ std::vector<Van> &App::getVans() {
 }
 
 void App::optimizeExpressDeliveries() {
-    resetOrders();
+    readOrders();
     int shippedExpressOrders = 0;
     int currTime = 0;
     sort(express_orders.begin(), express_orders.end(), [](Order &lhs, Order &rhs) {
@@ -197,17 +200,6 @@ void App::writeSettings() {
 
 int App::getMaxExpressDuration() {
     return maxExpressDuration;
-}
-
-void App::resetOrders() {
-    for(Order &order : express_orders){
-        order.setExpress(order.getDuration() <= maxExpressDuration);
-        order.setUnshipped();
-    }
-    for(Order &order : normal_orders){
-        order.setExpress(order.getDuration() <= maxExpressDuration);
-        order.setUnshipped();
-    }
 }
 
 void App::nextExpressDay() {
@@ -314,8 +306,8 @@ bool App::createFile(std::fstream *file, int FILE_NUM) {
 }
 
 void App::clearOrdersFromVans() {
-    for(int i = 0 ; i < vans.size(); i++){
-        vans[i].get_belong_orders().clear();
+    for(Van &van : vans){
+        van.get_belong_orders().clear();
     }
 }
 
@@ -341,6 +333,16 @@ std::vector<Order> &App::getNormalOrders() {
 
 std::vector<Order> &App::getExpressOrders() {
     return express_orders;
+}
+
+void App::saveData() {
+    writeSettings();
+}
+
+void App::clearOrders() {
+    express_orders.clear();
+    normal_orders.clear();
+    Order::resetOrderIds();
 }
 
 
