@@ -8,9 +8,9 @@ App::~App() = default;
 
 void App::readFile(int file) {
     switch (file) {
-        case 0: readVans(); break;
-        case 1: readOrders(); break;
-        case 2: readSettings(); break;
+        case 0: readSettings(); break;
+        case 1: readVans(); break;
+        case 2: readOrders(); break;
         default: break;
     }
 }
@@ -154,28 +154,20 @@ void App::writeOrders() {
     ordersFile.close();
 }
 
-std::vector<std::string> App::readExpressOrdersData() {
-    const int NUM_LINES = 3;
-    string info;
-    vector<string> data;
-    fstream expressOrdersFile;
-
-    if(createFile(&expressOrdersFile,2)){
-        data.push_back("No data available");
-        expressOrdersFile.close();
-        return data;
+void App::readExpressOrdersData() {
+    ifstream expressOrdersFile;
+    string data;
+    expressOrdersFile.open(dataFolder + filesname[2]);
+    if(!expressOrdersFile){
+        cout << "No data available" << endl;
     }
-
-    for(int i = 0; i < NUM_LINES; i++){
-        getline(expressOrdersFile, info);
-        data.push_back(info);
+    else{
+        while (getline(expressOrdersFile, data))
+        {
+            cout << data << endl;
+        }
     }
     expressOrdersFile.close();
-    if(data[0].empty()) {
-        data.clear();
-        data.emplace_back("No data available");
-    }
-    return data;
 }
 
 void App::setMaxExpressDuration(int maxExpressDuration) {
@@ -284,7 +276,6 @@ void App::dispatchOrdersToVans() {
             if (vansNo + 1 > vans.size()) {
                 ordersLeft = n - i + 1;
                 writeEfficientVans(vansNo,ordersLeft);
-                cout << "ardeu"<< endl;
                 return;
             }
 
@@ -334,6 +325,7 @@ void App::setWorkingTime(int workTime) {
     this->workTime = workTime*3600;
 }
 
+
 bool App::createFile(std::fstream *file, int FILE_NUM) {
     bool created = false;
     file->open(dataFolder + filesname[FILE_NUM], ios::in);
@@ -350,28 +342,27 @@ bool App::createFile(std::fstream *file, int FILE_NUM) {
     return created;
 }
 
-std::vector<std::string> App::readEfficientVansData() {
-    const int NUM_LINES = 3;
-    string info;
-    vector<string> data;
-    fstream expressOrdersFile;
-
-    if(createFile(&expressOrdersFile,4)){
-        data.push_back("No data available");
-        expressOrdersFile.close();
-        return data;
+void App::clearOrdersFromVans() {
+    for(int i = 0 ; i < vans.size(); i++){
+        vans[i].get_belong_orders().clear();
     }
-
-    for(int i = 0; i < NUM_LINES; i++){
-        getline(expressOrdersFile, info);
-        data.push_back(info);
-    }
-    expressOrdersFile.close();
-    if(data[0].empty()) {
-        data.clear();
-        data.emplace_back("No data available");
-    }
-    return data;
 }
+
+void App::readMinVansData() {
+    string data;
+    ifstream minVansFile;
+    minVansFile.open(dataFolder + filesname[4]);
+    if(!minVansFile){
+        cout << "No data available" << endl;
+    }
+    else{
+        while (getline(minVansFile, data))
+        {
+            cout << data << endl;
+        }
+    }
+    minVansFile.close();
+}
+
 
 

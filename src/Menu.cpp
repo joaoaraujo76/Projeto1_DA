@@ -81,8 +81,7 @@ Menu *ExpressOrderMenu::nextMenu() {
             return this;
         }
         case 2: {
-            for(const string &line : app.readExpressOrdersData())
-                cout << line << endl;
+            app.readExpressOrdersData();
             return this;
         }
         case 3: {
@@ -160,7 +159,7 @@ void MinVansMenu::display() {
     cout << endl;
     cout << "Min Vans Scenario:" << endl;
     cout << "1 - Dispatch Orders to Vans" << endl;
-    cout << "2 - See Information" << endl;
+    cout << "2 - View Information" << endl;
     cout << "0 - Exit" << endl;
     cout << endl;
 }
@@ -170,11 +169,9 @@ Menu *MinVansMenu::nextMenu() {
         case 1:
             app.dispatchOrdersToVans();
             return this;
-        case 2: {
-            for(const string &line : app.readEfficientVansData())
-                cout << line << endl;
+        case 2:
+            app.readMinVansData();
             return this;
-        }
         case 0:
             return nullptr;
         default:
@@ -190,7 +187,7 @@ void MaxProfitMenu::display() {
     cout << endl;
     cout << "Max Profit Scenario: (not done)" << endl;
     cout << "1 - Dispatch Orders to Vans" << endl;
-    cout << "2 - See Information" << endl;
+    cout << "2 - View Information" << endl;
     cout << "0 - Exit" << endl;
     cout << endl;
 }

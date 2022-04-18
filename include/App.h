@@ -30,8 +30,8 @@ public:
     void readVans();
     void readOrders();
     void readSettings();
-    std::vector<std::string> readExpressOrdersData();
-    std::vector<std::string> readEfficientVansData();
+    void readExpressOrdersData();
+    void readMinVansData();
     void loadData();
     void saveData();
     void writeVans();
@@ -50,6 +50,7 @@ public:
     void setMaxExpressDuration(int maxExpressDuration);
     void resetOrders();
     void nextExpressDay();
+    void clearOrdersFromVans();
 };
 
 #endif //PROJETO1_DA_APP_H
