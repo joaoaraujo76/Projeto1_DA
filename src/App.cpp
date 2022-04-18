@@ -309,6 +309,9 @@ void App::writeEfficientVans(int vansNo, int ordersLeft) {
     if(ordersLeft > 0){
         EfficientVans << "Impossible to deliver all orders: " << ordersLeft << " orders left" << endl;
     }
+    else{
+        EfficientVans << "Delivered all "<< ordersLeft << "orders" << endl;
+    }
     EfficientVans << "Used " << vansNo << "/" << vans.size() << " vans" << endl;
     EfficientVans << "Percent of vans used: " << percentVans << "%" << endl;
     EfficientVans << "Vans used and their orders:";
@@ -344,6 +347,30 @@ bool App::createFile(std::fstream *file, int FILE_NUM) {
         }
     }
     return created;
+}
+
+std::vector<std::string> App::readEfficientVansData() {
+    const int NUM_LINES = 3;
+    string info;
+    vector<string> data;
+    fstream expressOrdersFile;
+
+    if(createFile(&expressOrdersFile,4)){
+        data.push_back("No data available");
+        expressOrdersFile.close();
+        return data;
+    }
+
+    for(int i = 0; i < NUM_LINES; i++){
+        getline(expressOrdersFile, info);
+        data.push_back(info);
+    }
+    expressOrdersFile.close();
+    if(data[0].empty()) {
+        data.clear();
+        data.emplace_back("No data available");
+    }
+    return data;
 }
 
 

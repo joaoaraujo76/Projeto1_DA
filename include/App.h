@@ -31,6 +31,7 @@ public:
     void readOrders();
     void readSettings();
     std::vector<std::string> readExpressOrdersData();
+    std::vector<std::string> readEfficientVansData();
     void loadData();
     void saveData();
     void writeVans();

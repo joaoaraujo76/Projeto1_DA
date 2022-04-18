@@ -170,9 +170,11 @@ Menu *MinVansMenu::nextMenu() {
         case 1:
             app.dispatchOrdersToVans();
             return this;
-        case 2:
-            //app.rea;
+        case 2: {
+            for(const string &line : app.readEfficientVansData())
+                cout << line << endl;
             return this;
+        }
         case 0:
             return nullptr;
         default:
