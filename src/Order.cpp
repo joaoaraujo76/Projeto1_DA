@@ -2,14 +2,17 @@
 
 using namespace std;
 
-Order::Order(int ID, int VOLUME, int WEIGHT, int REWARD, int DURATION, bool express, bool shipped) {
+int Order::order_nID = 0;
+
+
+Order::Order(int VOLUME, int WEIGHT, int REWARD, int DURATION, bool express, bool shipped) {
     this->VOLUME=VOLUME;
     this->WEIGHT=WEIGHT;
     this->REWARD=REWARD;
     this->DURATION=DURATION;
     this->express = express;
     this->shipped = shipped;
-    this->ID = ID;
+    ID = generateID();
 }
 
 int Order::getVolume() const{
@@ -56,4 +59,9 @@ bool Order::isShipped() {
 
 void Order::setExpress(bool express) {
     this->express = express;
+}
+
+int Order::generateID() {
+    order_nID++;
+    return order_nID;
 }

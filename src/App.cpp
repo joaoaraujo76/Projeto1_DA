@@ -40,28 +40,20 @@ void App::readVans() {
 
 void App::readOrders() {
     fstream ordersFile;
-    int volume, weight, reward, duration, id = 0;
-    bool express;
+    int volume, weight, reward, duration;
+    string info;
 
-    for(int fileNum = 0; fileNum <=2; fileNum += 2){
-        if(createFile(&ordersFile, fileNum) && fileNum == 0)
-            cerr << "Unable to open orders.txt" << endl;
-        string info;
 
-        if(fileNum == 0)
-            getline(ordersFile, info);
-        else
-            for(int times = 0; times < 3; times++){
-                getline(ordersFile, info);
-            }
+    if(createFile(&ordersFile, 0))
+        cerr << "Unable to open orders.txt" << endl;
 
-        while (ordersFile >> volume >> weight >> reward >> duration) {
-            express = duration <= maxExpressDuration;
-            Order order(id++, volume, weight, reward, duration, express, false);
-            orders.push_back(order);
-        }
-        ordersFile.close();
+    getline(ordersFile, info);
+
+    while (ordersFile >> volume >> weight >> reward >> duration) {
+        Order order(volume, weight, reward, duration, duration <= maxExpressDuration, false);
+        orders.push_back(order);
     }
+    ordersFile.close();
 }
 
 void App::readSettings() {
@@ -180,6 +172,7 @@ std::vector<std::string> App::readExpressOrdersData() {
 
 void App::setMaxExpressDuration(int maxExpressDuration) {
     this->maxExpressDuration = maxExpressDuration * 60;
+    evaluateOrders();
 }
 
 bool App::clearFile(fstream *file, int FILE_NUM) {
@@ -257,26 +250,29 @@ void App::nextExpressDay() {
 void App::dispatchOrdersToVans() {
     vector<int> vanRemainVol(vans.size());
     vector<int> vanRemainWeight(vans.size());
+    vector<Order> normalOrders;
 
+    for (auto &o : orders)
+        if (!o.isExpress()) normalOrders.push_back(o);
 
-    sort(orders.begin(), orders.end(), [](const Order &lhs, const Order &rhs) {
+    sort(normalOrders.begin(), normalOrders.end(), [](const Order &lhs, const Order &rhs) {
         return (lhs.getVolume() * lhs.getWeight()) > (rhs.getVolume() * rhs.getWeight());
     });
     sort(vans.begin(), vans.end(), [](const Van &lhs, const Van &rhs) {
         return (lhs.getVolume() * lhs.getWeight()) >= (rhs.getWeight() * rhs.getVolume());
     });
 
-    int ordersLeft;
+    int ordersLeft = 0;
     int vansNo = 0;
-    int n = (int) orders.size();
+    int n = (int) normalOrders.size();
 
     for (int i = 0; i < n; i++) {
         int j;
         for (j = 0; j < vansNo; j++) {
-            if (vanRemainVol[j] >= orders[i].getVolume() && vanRemainWeight[j] >= orders[i].getWeight() && !orders[i].isExpress()) {
-                vanRemainVol[j] = vanRemainVol[j] - orders[i].getVolume();
-                vanRemainWeight[j] = vanRemainWeight[j] - orders[i].getWeight();
-                vans[j].add(orders[i]);
+            if (vanRemainVol[j] >= normalOrders[i].getVolume() && vanRemainWeight[j] >= normalOrders[i].getWeight() && !normalOrders[i].isExpress()) {
+                vanRemainVol[j] = vanRemainVol[j] - normalOrders[i].getVolume();
+                vanRemainWeight[j] = vanRemainWeight[j] - normalOrders[i].getWeight();
+                vans[j].add(normalOrders[i]);
                 break;
             }
         }
@@ -287,12 +283,12 @@ void App::dispatchOrdersToVans() {
                 return;
             }
 
-            if(!orders[i].isExpress()){
+            if(!normalOrders[i].isExpress()){
                 int vanVol = vans[vansNo].getVolume();
                 int vanWeight = vans[vansNo].getWeight();
-                vanRemainVol[vansNo] = vanVol - orders[i].getVolume();
-                vanRemainWeight[vansNo] = vanWeight - orders[i].getWeight();
-                vans[j].add(orders[i]);
+                vanRemainVol[vansNo] = vanVol - normalOrders[i].getVolume();
+                vanRemainWeight[vansNo] = vanWeight - normalOrders[i].getWeight();
+                vans[j].add(normalOrders[i]);
                 vansNo++;
             }
         }
@@ -373,4 +369,11 @@ std::vector<std::string> App::readEfficientVansData() {
     return data;
 }
 
+
+
+void App::evaluateOrders() {
+    for(Order &order : orders){
+        order.setExpress(order.getDuration() <= maxExpressDuration);
+    }
+}
 

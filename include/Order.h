@@ -5,7 +5,7 @@
 
 class Order {
 public:
-    Order(int ID, int VOLUME, int WEIGHT, int REWARD, int DURATION, bool express, bool shipped);
+    Order(int VOLUME, int WEIGHT, int REWARD, int DURATION, bool express, bool shipped);
     int getVolume() const;
     int getWeight() const;
     int getReward() const;
@@ -19,12 +19,14 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Order &o);
 private:
     int ID;
+    static int order_nID;
     int VOLUME;
     int WEIGHT;
     int REWARD;
     int DURATION;
     bool express;
     bool shipped;
+    int generateID();
 };
 
 #endif //PROJETO1_DA_ORDER_H
