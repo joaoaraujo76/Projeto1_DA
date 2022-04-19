@@ -5,7 +5,7 @@
 
 class Order {
 public:
-    Order(int VOLUME, int WEIGHT, int REWARD, int DURATION, bool express, bool shipped);
+    Order(int VOLUME, int WEIGHT, int REWARD, int DURATION);
     int getVolume() const;
     int getWeight() const;
     int getReward() const;

@@ -32,12 +32,15 @@ public:
     void readVans();
     void readOrders();
     void readSettings();
+    bool emptyFile(std::fstream *file);
     std::vector<std::string> readExpressOrdersData();
     std::vector<std::string> readEfficientVansData();
     void loadData();
     void saveData();
     void writeVans();
     void writeOrders();
+    void writeNormalOrders();
+    void writeExpressOrders();
     void writeSettings();
     void writeExpressOrders(int averageTime, size_t numDeliveries, int percentDeliveries);
     void writeEfficientVans(int vansNo, int ordersLeft);
@@ -50,7 +53,8 @@ public:
     void setWorkingTime(int workTime);
     int getMaxExpressDuration();
     void setMaxExpressDuration(int maxExpressDuration);
-    void resetOrders();
+    void resetExpressOrders();
+    void resetNormalOrders();
     void evaluateOrders();
     void nextExpressDay();
 };

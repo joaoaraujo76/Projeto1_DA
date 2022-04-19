@@ -5,13 +5,12 @@ using namespace std;
 int Order::order_nID = 0;
 
 
-Order::Order(int VOLUME, int WEIGHT, int REWARD, int DURATION, bool express, bool shipped) {
+Order::Order(int VOLUME, int WEIGHT, int REWARD, int DURATION) {
     this->VOLUME=VOLUME;
     this->WEIGHT=WEIGHT;
     this->REWARD=REWARD;
     this->DURATION=DURATION;
-    this->express = express;
-    this->shipped = shipped;
+    shipped = false;
     ID = generateID();
 }
 

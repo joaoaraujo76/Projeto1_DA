@@ -8,9 +8,9 @@ App::~App() = default;
 
 void App::readFile(int file) {
     switch (file) {
-        case 0: readVans(); break;
-        case 1: readOrders(); break;
-        case 2: readSettings(); break;
+        case 0: readSettings(); break;
+        case 1: readVans(); break;
+        case 2: readOrders(); break;
         default: break;
     }
 }
@@ -40,7 +40,7 @@ void App::readVans() {
 
 void App::readOrders() {
     fstream ordersFile;
-    int volume, weight, reward, duration;
+    int volume, weight, reward, duration, id;
     string info;
 
 
@@ -50,31 +50,33 @@ void App::readOrders() {
     getline(ordersFile, info);
 
     while (ordersFile >> volume >> weight >> reward >> duration) {
-        Order order(volume, weight, reward, duration, duration <= maxExpressDuration, false);
+        Order order(volume, weight, reward, duration);
         orders.push_back(order);
     }
     ordersFile.close();
+    evaluateOrders();
 }
 
 void App::readSettings() {
     fstream settingsFile;
-    if(clearFile(&settingsFile,3)){
-        settingsFile << "work time (hours)-10\n";
-        settingsFile << "max express delivery duration (minutes)-4";
+    createFile(&settingsFile, 3);
+    if (emptyFile(&settingsFile)) {
+        settingsFile << "work time (hours) -10" << endl;
+        settingsFile << "max express delivery duration (minutes) -4" << endl;
     }
-    settingsFile.close();
-    settingsFile.open(dataFolder + filesname[3]);
-
     string line;
     getline(settingsFile,line, '-');
-    settingsFile >> workTime;
+    settingsFile << workTime;
+    cout << workTime << endl;
     setWorkingTime(workTime);
     getline(settingsFile,line, '-');
     settingsFile >> maxExpressDuration;
+    cout << maxExpressDuration << endl;
     setMaxExpressDuration(maxExpressDuration);
 
     settingsFile.close();
 }
+
 
 std::vector<Van> &App::getVans() {
     return vans;
@@ -85,7 +87,7 @@ std::vector<Order> &App::getOrders() {
 }
 
 void App::optimizeExpressDeliveries() {
-    resetOrders();
+    resetExpressOrders();
     int shippedExpressOrders = 0;
     int currTime = 0;
     sort(orders.begin(), orders.end(), [](Order &lhs, Order &rhs) {
@@ -108,7 +110,6 @@ void App::optimizeExpressDeliveries() {
     }
     if(shippedExpressOrders!=0)
         writeExpressOrders((int) (currTime / shippedExpressOrders), shippedExpressOrders, (int)round(((double)shippedExpressOrders / (double)orders.size()) * 100));
-    writeOrders();
 }
 
 void App::writeExpressOrders(int averageTime, size_t numDeliveries, int percentDeliveries) {
@@ -136,12 +137,10 @@ void App::writeOrders() {
     ordersFile << "volume peso recompensa duração(s) \n";
     for(Order &order : orders){
         counter++;
-        if(!order.isExpress() && !order.isShipped()){
-            if(counter == orders.size())
-                ordersFile << order;
-            else
-                ordersFile << order << endl;
-        }
+        if(counter == orders.size())
+            ordersFile << order;
+        else
+            ordersFile << order << endl;
     }
     ordersFile.close();
 }
@@ -171,24 +170,8 @@ std::vector<std::string> App::readExpressOrdersData() {
 }
 
 void App::setMaxExpressDuration(int maxExpressDuration) {
-    this->maxExpressDuration = maxExpressDuration * 60;
+    this->maxExpressDuration = maxExpressDuration*60;
     evaluateOrders();
-}
-
-bool App::clearFile(fstream *file, int FILE_NUM) {
-    bool exists = true;
-    file->open(dataFolder + filesname[FILE_NUM], ofstream::out | ofstream::trunc);
-    if(!file->is_open()){
-        fstream newFile(dataFolder + filesname[FILE_NUM]);
-        file = &newFile;
-        newFile.open(dataFolder + filesname[FILE_NUM], ofstream::out | ofstream::trunc);
-        exists = false;
-        if (!newFile.is_open()) {
-            cerr << "Unable to open file";
-            exit(1);
-        }
-    }
-    return exists;
 }
 
 void App::saveData() {
@@ -201,7 +184,7 @@ void App::saveFile(int file) {
     switch (file) {
         case 0: writeVans(); break;
         case 1: writeOrders(); break;
-        case 3: writeSettings(); break;
+        //case 2: writeSettings(); break;
         default: break;
     }
 }
@@ -220,10 +203,8 @@ void App::writeVans() {
 void App::writeSettings() {
     fstream settingsFile;
     clearFile(&settingsFile,3);
-    settingsFile << "work time (hours) -";
-    settingsFile << workTime / 3600 << endl;
-    settingsFile << "max express delivery duration (minutes) -";
-    settingsFile << maxExpressDuration / 60;
+    settingsFile << "work time (hours) -" << workTime / 3600 << endl;
+    settingsFile << "max express delivery duration (minutes) -" << maxExpressDuration / 60 << endl;
     settingsFile.close();
 }
 
@@ -232,10 +213,10 @@ int App::getMaxExpressDuration() {
     return maxExpressDuration;
 }
 
-void App::resetOrders() {
+void App::resetExpressOrders() {
     for(Order &order : orders){
-        order.setExpress(order.getDuration() <= maxExpressDuration);
-        order.setUnshipped();
+        if(order.isExpress())
+            order.setUnshipped();
     }
 }
 
@@ -251,6 +232,8 @@ void App::dispatchOrdersToVans() {
     vector<int> vanRemainVol(vans.size());
     vector<int> vanRemainWeight(vans.size());
     vector<Order> normalOrders;
+
+    resetNormalOrders();
 
     for (auto &o : orders)
         if (!o.isExpress()) normalOrders.push_back(o);
@@ -272,6 +255,7 @@ void App::dispatchOrdersToVans() {
             if (vanRemainVol[j] >= normalOrders[i].getVolume() && vanRemainWeight[j] >= normalOrders[i].getWeight() && !normalOrders[i].isExpress()) {
                 vanRemainVol[j] = vanRemainVol[j] - normalOrders[i].getVolume();
                 vanRemainWeight[j] = vanRemainWeight[j] - normalOrders[i].getWeight();
+                normalOrders[i].setShipped();
                 vans[j].add(normalOrders[i]);
                 break;
             }
@@ -288,6 +272,8 @@ void App::dispatchOrdersToVans() {
                 int vanWeight = vans[vansNo].getWeight();
                 vanRemainVol[vansNo] = vanVol - normalOrders[i].getVolume();
                 vanRemainWeight[vansNo] = vanWeight - normalOrders[i].getWeight();
+                normalOrders[i].setShipped();
+
                 vans[j].add(normalOrders[i]);
                 vansNo++;
             }
@@ -331,7 +317,7 @@ void App::setWorkingTime(int workTime) {
 
 bool App::createFile(std::fstream *file, int FILE_NUM) {
     bool created = false;
-    file->open(dataFolder + filesname[FILE_NUM], ios::in);
+    file->open(dataFolder + filesname[FILE_NUM], ios::app);
     if(!file->is_open()){
         fstream newFile(dataFolder + filesname[FILE_NUM]);
         file = &newFile;
@@ -375,5 +361,61 @@ void App::evaluateOrders() {
     for(Order &order : orders){
         order.setExpress(order.getDuration() <= maxExpressDuration);
     }
+    writeExpressOrders();
+    writeNormalOrders();
+}
+
+void App::writeNormalOrders() {
+    fstream ordersFile;
+    clearFile(&ordersFile,5);
+    ordersFile << "id volume peso recompensa duração(s) \n";
+    for(Order &order : orders){
+        if(!order.isExpress()){
+            ordersFile << order.getID() << " " << order << endl;
+        }
+    }
+    ordersFile.close();
+}
+
+void App::writeExpressOrders() {
+    fstream ordersFile;
+    clearFile(&ordersFile,2);
+    ordersFile << "id volume peso recompensa duração(s) \n";
+    for(Order &order : orders){
+        if(order.isExpress()){
+            ordersFile << order.getID() << " " << order << endl;
+        }
+    }
+    ordersFile.close();
+}
+
+void App::resetNormalOrders() {
+    for(Order &order : orders){
+        if(!order.isExpress())
+            order.setUnshipped();
+    }
+}
+
+bool App::clearFile(std::fstream *file, int FILE_NUM) {
+    file->open(dataFolder + filesname[FILE_NUM], ofstream::out | ofstream::trunc);
+    if(!file->is_open()){
+        fstream newFile(dataFolder + filesname[FILE_NUM]);
+        file = &newFile;
+        newFile.open(dataFolder + filesname[FILE_NUM], ofstream::out | ofstream::trunc);
+        return false;
+        if (!newFile.is_open()) {
+            cerr << "Unable to open file";
+            exit(1);
+        }
+    }
+    return true;
+}
+
+bool App::emptyFile(fstream *file) {
+    file->seekg(0, ios::end);
+    if (file->tellg() == 0) {
+        return true;
+    }
+    return false;
 }
 
