@@ -64,11 +64,12 @@ void App::readOrders() {
 void App::readSettings() {
     fstream settingsFile;
     createFile(&settingsFile, 3);
-    if (emptyFile(&settingsFile)) {
+    if (emptyFile(&settingsFile, 3)) {
+        cout << "empty" << endl;
         settingsFile << "work time (hours) -10" << endl;
         settingsFile << "max express delivery duration (minutes) -4" << endl;
+        settingsFile.close();
     }
-    settingsFile.close();
     ifstream file(dataFolder + filesname[3]);
     string line;
     getline(file,line, '-');
@@ -323,7 +324,7 @@ void App::setWorkingTime(int workTime) {
 
 bool App::createFile(std::fstream *file, int FILE_NUM) {
     bool created = false;
-    file->open(dataFolder + filesname[FILE_NUM], ios::app);
+    file->open(dataFolder + filesname[FILE_NUM]);
     if(!file->is_open()){
         fstream newFile(dataFolder + filesname[FILE_NUM]);
         file = &newFile;
@@ -418,7 +419,8 @@ bool App::clearFile(std::fstream *file, int FILE_NUM) {
     return true;
 }
 
-bool App::emptyFile(fstream *file) {
+bool App::emptyFile(fstream *file, const int FILE_NUM) {
+    file->open(dataFolder + filesname[FILE_NUM]);
     file->seekg(0, ios::end);
     if (file->tellg() == 0) {
         return true;

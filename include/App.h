@@ -33,7 +33,7 @@ public:
     void readVans();
     void readOrders();
     void readSettings();
-    bool emptyFile(std::fstream *file);
+    bool emptyFile(std::fstream *file, const int FILE_NUM);
     std::vector<std::string> readExpressOrdersData();
     std::vector<std::string> readEfficientVansData();
     void loadData();
