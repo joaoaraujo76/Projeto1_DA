@@ -52,6 +52,8 @@ void App::readOrders() {
     while (ordersFile >> volume >> weight >> reward >> duration) {
         Order order(volume, weight, reward, duration);
         orders.push_back(order);
+        cout << "passou" << endl;
+
     }
     ordersFile.close();
     evaluateOrders();
@@ -64,17 +66,18 @@ void App::readSettings() {
         settingsFile << "work time (hours) -10" << endl;
         settingsFile << "max express delivery duration (minutes) -4" << endl;
     }
+    settingsFile.close();
+    ifstream file(dataFolder + filesname[3]);
     string line;
-    getline(settingsFile,line, '-');
-    settingsFile << workTime;
+    getline(file,line, '-');
+    file >> workTime;
     cout << workTime << endl;
     setWorkingTime(workTime);
-    getline(settingsFile,line, '-');
-    settingsFile >> maxExpressDuration;
+    getline(file,line, '-');
+    file >> maxExpressDuration;
     cout << maxExpressDuration << endl;
     setMaxExpressDuration(maxExpressDuration);
-
-    settingsFile.close();
+    file.close();
 }
 
 
@@ -184,7 +187,7 @@ void App::saveFile(int file) {
     switch (file) {
         case 0: writeVans(); break;
         case 1: writeOrders(); break;
-        //case 2: writeSettings(); break;
+        case 2: writeSettings(); break;
         default: break;
     }
 }
@@ -233,6 +236,7 @@ void App::dispatchOrdersToVans() {
     vector<int> vanRemainWeight(vans.size());
     vector<Order> normalOrders;
 
+    resetVans();
     resetNormalOrders();
 
     for (auto &o : orders)
@@ -417,5 +421,72 @@ bool App::emptyFile(fstream *file) {
         return true;
     }
     return false;
+}
+
+void App::maxProfitDispatch() {
+    int maxProfit, profit=0;
+    vector<Order> normalOrders;
+    resetNormalOrders();
+    resetVans();
+
+    for (auto &o : orders)
+        if (!o.isExpress()) normalOrders.push_back(o);
+
+    sort(vans.begin(), vans.end(), [](const Van &lhs, const Van &rhs) {
+        return (lhs.getCost() < lhs.getCost());
+    });
+
+    for (auto& van : vans){
+        int i, w, v;
+        int W = van.getWeight();
+        int V = van.getVolume();
+        int n = (int) normalOrders.size();
+        vector<int> ordersShiped;
+        profit = -van.getCost();
+
+        if (normalOrders.empty()) break;
+
+        vector<vector<vector<int>>> K(n + 1, vector<vector<int>>(W + 1, vector<int>(V + 1, 0)));
+
+        for(i = 1; i <= n; i++) {
+            int weight = normalOrders[i-1].getWeight();
+            int volume = normalOrders[i-1].getVolume();
+            int reward = normalOrders[i-1].getReward();
+            for(w = 0; w <= W; w++) {
+                for (v = 0; v <= V; v++){
+                    K[i][w][v] = K[i-1][w][v];
+
+                    if ((w >= weight) && (v >= volume) && (K[i][w][v] < K[i - 1][w - weight][v - volume] + reward)) {
+                        K[i][w][v] = K[i-1][w - weight][v - volume] + reward;
+                    }
+                }
+            }
+        }
+
+        while (n != 0) {
+            if (K[n][W][V] != K[n - 1][W][V]) {
+                W = W - normalOrders[n-1].getWeight();
+                V = V - normalOrders[n-1].getVolume();
+                profit += normalOrders[n-1].getReward();
+                ordersShiped.push_back(n-1);
+            }
+            n--;
+        }
+
+        if (profit > 0){
+            for (auto index : ordersShiped)
+                van.add(normalOrders[index]);
+            for (auto index : ordersShiped)
+                normalOrders.erase(normalOrders.begin()+index);
+            maxProfit += profit;
+        }
+    }
+    cout << "The max profit is: " << maxProfit << endl;
+}
+
+void App::resetVans() {
+    for (auto van : vans){
+        van.clearOrders();
+    }
 }
 

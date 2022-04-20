@@ -145,6 +145,8 @@ Menu *NormalOrderMenu::nextMenu() {
     switch (readInt()) {
         case 1:
             return new MinVansMenu(app);
+        case 2:
+            return new MaxProfitMenu(app);
         case 0:
             return nullptr;
         default:
@@ -198,7 +200,7 @@ void MaxProfitMenu::display() {
 Menu *MaxProfitMenu::nextMenu() {
     switch (readInt()) {
         case 1:
-            //scenario2 func
+            app.maxProfitDispatch();
             return this;
         case 0:
             return nullptr;

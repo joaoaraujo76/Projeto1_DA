@@ -14,6 +14,7 @@ public:
     int getID() const;
     void add(Order &o);
     std::vector <Order> get_belong_orders();
+    void clearOrders();
     friend std::ostream& operator<<(std::ostream& os, const Van &o);
 private:
     int ID;

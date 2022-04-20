@@ -40,4 +40,8 @@ std::vector<Order> Van::get_belong_orders() {
     return belong_orders;
 }
 
+void Van::clearOrders() {
+    belong_orders.clear();
+}
+
 

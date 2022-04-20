@@ -9,6 +9,7 @@
 #include <sstream>
 #include <stack>
 #include <cmath>
+#include <sstream>
 #include "Van.h"
 #include "Order.h"
 
@@ -47,6 +48,7 @@ public:
     void saveFile(int file);
     void optimizeExpressDeliveries();
     void dispatchOrdersToVans();
+    void maxProfitDispatch();
     std::vector<Van> &getVans();
     std::vector<Order> &getOrders() ;
     int getWorkingTime() const;
@@ -54,6 +56,7 @@ public:
     int getMaxExpressDuration();
     void setMaxExpressDuration(int maxExpressDuration);
     void resetExpressOrders();
+    void resetVans();
     void resetNormalOrders();
     void evaluateOrders();
     void nextExpressDay();
