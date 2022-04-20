@@ -65,7 +65,6 @@ void App::readSettings() {
     fstream settingsFile;
     createFile(&settingsFile, 3);
     if (emptyFile(&settingsFile, 3)) {
-        cout << "empty" << endl;
         settingsFile << "work time (hours) -10" << endl;
         settingsFile << "max express delivery duration (minutes) -4" << endl;
         settingsFile.close();
@@ -74,11 +73,9 @@ void App::readSettings() {
     string line;
     getline(file,line, '-');
     file >> workTime;
-    cout << workTime << endl;
     setWorkingTime(workTime);
     getline(file,line, '-');
     file >> maxExpressDuration;
-    cout << maxExpressDuration << endl;
     setMaxExpressDuration(maxExpressDuration);
     file.close();
 }
