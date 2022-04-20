@@ -28,34 +28,36 @@ void App::readVans() {
     if(createFile(&vansFile,1))
         cerr << "Unable to open vans.txt" << endl;
     string info;
+    vansFile.close();
 
-    getline(vansFile, info); // trash
+    ifstream file(dataFolder + filesname[1]);
+    getline(file, info); // trash
 
-    while (vansFile >> maxVol >> maxWeight >> cost) {
+    while (file >> maxVol >> maxWeight >> cost) {
         Van van(id++,maxVol, maxWeight, cost);
         vans.push_back(van);
     }
-    vansFile.close();
+    file.close();
 }
 
 void App::readOrders() {
     fstream ordersFile;
     int volume, weight, reward, duration, id;
+    int NUM = 0;
     string info;
 
-
-    if(createFile(&ordersFile, 0))
+    if(createFile(&ordersFile, NUM))
         cerr << "Unable to open orders.txt" << endl;
+    ordersFile.close();
 
-    getline(ordersFile, info);
+    ifstream file(dataFolder + filesname[NUM]);
+    getline(file, info);
 
-    while (ordersFile >> volume >> weight >> reward >> duration) {
+    while (file >> volume >> weight >> reward >> duration) {
         Order order(volume, weight, reward, duration);
         orders.push_back(order);
-        cout << "passou" << endl;
-
     }
-    ordersFile.close();
+    file.close();
     evaluateOrders();
 }
 
@@ -332,6 +334,7 @@ bool App::createFile(std::fstream *file, int FILE_NUM) {
             exit(1);
         }
     }
+    file->close();
     return created;
 }
 
