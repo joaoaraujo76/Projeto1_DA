@@ -19,12 +19,13 @@ private:
     std::string dataFolder = "../data/";
     std::vector<Order> orders;
     std::vector <Van> vans;
-
-    std::vector <std::string> filesname = {"orders.txt", "vans.txt", "express_orders.txt", "settings.txt", "min_vans.txt", "normal_orders.txt"};
+    std::vector <std::string> filesname = {"orders.txt", "vans.txt", "express_orders.txt", "settings.txt", "min_vans.txt", "normal_orders.txt", "profit_vans.txt"};
 
     int workTime;
     int maxExpressDuration;
 public:
+    enum filesnumber {ORDERFILE, VANSFILE, EXPORDERSFILE, SETSFILE, MINVANSFILE, NORMALORDERSFILE, PROFITVANSFILE};
+
     App();
     ~App();
     void readFile(int file);
@@ -33,9 +34,9 @@ public:
     void readVans();
     void readOrders();
     void readSettings();
-    bool emptyFile(std::fstream *file, const int FILE_NUM);
+    bool emptyFile(std::fstream *file, int FILE_NUM);
     std::vector<std::string> readExpressOrdersData();
-    std::vector<std::string> readEfficientVansData();
+    std::vector<std::string> readEfficientVansData(filesnumber fileNo);
     void loadData();
     void saveData();
     void writeVans();
@@ -45,6 +46,7 @@ public:
     void writeSettings();
     void writeExpressOrders(int averageTime, size_t numDeliveries, int percentDeliveries);
     void writeEfficientVans(int vansNo, int ordersLeft);
+    void writeProfitVans(int vansNo, int ordersLeft, int maxProfit);
     void saveFile(int file);
     void optimizeExpressDeliveries();
     void dispatchOrdersToVans();

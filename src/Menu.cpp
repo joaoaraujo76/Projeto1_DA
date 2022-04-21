@@ -173,7 +173,7 @@ Menu *MinVansMenu::nextMenu() {
             app.dispatchOrdersToVans();
             return this;
         case 2: {
-            for(const string &line : app.readEfficientVansData())
+            for(const string &line : app.readEfficientVansData(App::MINVANSFILE))
                 cout << line << endl;
             return this;
         }
@@ -200,8 +200,14 @@ void MaxProfitMenu::display() {
 Menu *MaxProfitMenu::nextMenu() {
     switch (readInt()) {
         case 1:
+            cout << "Loading ..." << endl;
             app.maxProfitDispatch();
             return this;
+        case 2: {
+            for(const string &line : app.readEfficientVansData(App::PROFITVANSFILE))
+                cout << line << endl;
+            return this;
+        }
         case 0:
             return nullptr;
         default:

@@ -25,12 +25,12 @@ void App::readVans() {
     fstream vansFile;
     int maxVol, maxWeight, cost, id = 0;
 
-    if(createFile(&vansFile,1))
+    if(createFile(&vansFile,VANSFILE))
         cerr << "Unable to open vans.txt" << endl;
     string info;
     vansFile.close();
 
-    ifstream file(dataFolder + filesname[1]);
+    ifstream file(dataFolder + filesname[VANSFILE]);
     getline(file, info); // trash
 
     while (file >> maxVol >> maxWeight >> cost) {
@@ -43,14 +43,13 @@ void App::readVans() {
 void App::readOrders() {
     fstream ordersFile;
     int volume, weight, reward, duration, id;
-    int NUM = 0;
     string info;
 
-    if(createFile(&ordersFile, NUM))
+    if(createFile(&ordersFile, ORDERFILE))
         cerr << "Unable to open orders.txt" << endl;
     ordersFile.close();
 
-    ifstream file(dataFolder + filesname[NUM]);
+    ifstream file(dataFolder + filesname[ORDERFILE]);
     getline(file, info);
 
     while (file >> volume >> weight >> reward >> duration) {
@@ -63,8 +62,8 @@ void App::readOrders() {
 
 void App::readSettings() {
     fstream settingsFile;
-    createFile(&settingsFile, 3);
-    if (emptyFile(&settingsFile, 3)) {
+    createFile(&settingsFile, SETSFILE);
+    if (emptyFile(&settingsFile, SETSFILE)) {
         settingsFile << "work time (hours) -10" << endl;
         settingsFile << "max express delivery duration (minutes) -4" << endl;
         settingsFile.close();
@@ -117,7 +116,7 @@ void App::optimizeExpressDeliveries() {
 
 void App::writeExpressOrders(int averageTime, size_t numDeliveries, int percentDeliveries) {
     fstream expressOrdersFile;
-    clearFile(&expressOrdersFile,2);
+    clearFile(&expressOrdersFile,EXPORDERSFILE);
     if(averageTime == -1){
         expressOrdersFile << "Impossible to deliver any order";
         expressOrdersFile.close();
@@ -136,7 +135,7 @@ void App::writeExpressOrders(int averageTime, size_t numDeliveries, int percentD
 void App::writeOrders() {
     int counter = 0;
     fstream ordersFile;
-    clearFile(&ordersFile,0);
+    clearFile(&ordersFile,ORDERFILE);
     ordersFile << "volume peso recompensa duração(s) \n";
     for(Order &order : orders){
         counter++;
@@ -154,12 +153,12 @@ std::vector<std::string> App::readExpressOrdersData() {
     vector<string> data;
     fstream expressOrdersFile;
 
-    if(createFile(&expressOrdersFile,2)){
-        data.push_back("No data available");
+    if(createFile(&expressOrdersFile,EXPORDERSFILE)){
+        data.emplace_back("No data available");
         expressOrdersFile.close();
         return data;
     }
-
+    expressOrdersFile.open(dataFolder + filesname[2]);
     for(int i = 0; i < NUM_LINES; i++){
         getline(expressOrdersFile, info);
         data.push_back(info);
@@ -172,8 +171,8 @@ std::vector<std::string> App::readExpressOrdersData() {
     return data;
 }
 
-void App::setMaxExpressDuration(int maxExpressDuration) {
-    this->maxExpressDuration = maxExpressDuration*60;
+void App::setMaxExpressDuration(int maxExpDuration) {
+    this->maxExpressDuration = maxExpDuration*60;
     evaluateOrders();
 }
 
@@ -194,7 +193,7 @@ void App::saveFile(int file) {
 
 void App::writeVans() {
     fstream vansFile;
-    clearFile(&vansFile,1);
+    clearFile(&vansFile,VANSFILE);
     vansFile << "volMax pesoMax custo \n";
     for(const Van &van : vans){
         vansFile << van;
@@ -205,7 +204,7 @@ void App::writeVans() {
 
 void App::writeSettings() {
     fstream settingsFile;
-    clearFile(&settingsFile,3);
+    clearFile(&settingsFile,SETSFILE);
     settingsFile << "work time (hours) -" << workTime / 3600 << endl;
     settingsFile << "max express delivery duration (minutes) -" << maxExpressDuration / 60 << endl;
     settingsFile.close();
@@ -267,7 +266,7 @@ void App::dispatchOrdersToVans() {
         if (j == vansNo) {
             if (vansNo + 1 > vans.size()) {
                 ordersLeft = n - i + 1;
-                writeEfficientVans(vansNo,ordersLeft);
+                writeEfficientVans(vansNo, ordersLeft);
                 return;
             }
 
@@ -284,19 +283,19 @@ void App::dispatchOrdersToVans() {
         }
     }
 
-    writeEfficientVans(vansNo,ordersLeft);
+    writeEfficientVans(vansNo, ordersLeft);
 }
 
 
 void App::writeEfficientVans(int vansNo, int ordersLeft) {
     fstream EfficientVans;
-    clearFile(&EfficientVans,4);
+    clearFile(&EfficientVans,MINVANSFILE);
     float percentVans = (float) vansNo / vans.size() * 100;
     if(ordersLeft > 0){
         EfficientVans << "Impossible to deliver all orders: " << ordersLeft << " orders left" << endl;
     }
     else{
-        EfficientVans << "Delivered all "<< ordersLeft << "orders" << endl;
+        EfficientVans << "Delivered all orders" << endl;
     }
     EfficientVans << "Used " << vansNo << "/" << vans.size() << " vans" << endl;
     EfficientVans << "Percent of vans used: " << percentVans << "%" << endl;
@@ -336,23 +335,23 @@ bool App::createFile(std::fstream *file, int FILE_NUM) {
     return created;
 }
 
-std::vector<std::string> App::readEfficientVansData() {
+std::vector<std::string> App::readEfficientVansData(filesnumber fileNo) {
     const int NUM_LINES = 3;
     string info;
     vector<string> data;
-    fstream expressOrdersFile;
+    fstream file;
 
-    if(createFile(&expressOrdersFile,4)){
-        data.push_back("No data available");
-        expressOrdersFile.close();
+    if(createFile(&file, fileNo)){
+        data.emplace_back("No data available");
+        file.close();
         return data;
     }
-
+    file.open(dataFolder + filesname[fileNo]);
     for(int i = 0; i < NUM_LINES; i++){
-        getline(expressOrdersFile, info);
+        getline(file, info);
         data.push_back(info);
     }
-    expressOrdersFile.close();
+    file.close();
     if(data[0].empty()) {
         data.clear();
         data.emplace_back("No data available");
@@ -372,7 +371,7 @@ void App::evaluateOrders() {
 
 void App::writeNormalOrders() {
     fstream ordersFile;
-    clearFile(&ordersFile,5);
+    clearFile(&ordersFile, NORMALORDERSFILE);
     ordersFile << "id volume peso recompensa duração(s) \n";
     for(Order &order : orders){
         if(!order.isExpress()){
@@ -384,7 +383,7 @@ void App::writeNormalOrders() {
 
 void App::writeExpressOrders() {
     fstream ordersFile;
-    clearFile(&ordersFile,2);
+    clearFile(&ordersFile,EXPORDERSFILE);
     ordersFile << "id volume peso recompensa duração(s) \n";
     for(Order &order : orders){
         if(order.isExpress()){
@@ -426,34 +425,34 @@ bool App::emptyFile(fstream *file, const int FILE_NUM) {
 }
 
 void App::maxProfitDispatch() {
-    int maxProfit, profit=0;
-    vector<Order> normalOrders;
+    int maxProfit = 0, profit;
+    int shipedOrdersNo = 0;
+    int usedVans = 0;
+    vector<Order> auxOrders;
     resetNormalOrders();
     resetVans();
 
-    for (auto &o : orders)
-        if (!o.isExpress()) normalOrders.push_back(o);
-
+    for (auto &o : orders) auxOrders.push_back(o);
     sort(vans.begin(), vans.end(), [](const Van &lhs, const Van &rhs) {
-        return (lhs.getCost() < lhs.getCost());
+        return (lhs.getCost() < rhs.getCost() || (lhs.getCost() == rhs.getCost() && lhs.getVolume()*lhs.getWeight() >= rhs.getVolume()*rhs.getWeight()));
     });
 
     for (auto& van : vans){
         int i, w, v;
         int W = van.getWeight();
         int V = van.getVolume();
-        int n = (int) normalOrders.size();
+        int n = (int) auxOrders.size();
         vector<int> ordersShiped;
         profit = -van.getCost();
 
-        if (normalOrders.empty()) break;
+        if (auxOrders.empty()) break;
 
         vector<vector<vector<int>>> K(n + 1, vector<vector<int>>(W + 1, vector<int>(V + 1, 0)));
 
         for(i = 1; i <= n; i++) {
-            int weight = normalOrders[i-1].getWeight();
-            int volume = normalOrders[i-1].getVolume();
-            int reward = normalOrders[i-1].getReward();
+            int weight = auxOrders[i - 1].getWeight();
+            int volume = auxOrders[i - 1].getVolume();
+            int reward = auxOrders[i - 1].getReward();
             for(w = 0; w <= W; w++) {
                 for (v = 0; v <= V; v++){
                     K[i][w][v] = K[i-1][w][v];
@@ -467,9 +466,9 @@ void App::maxProfitDispatch() {
 
         while (n != 0) {
             if (K[n][W][V] != K[n - 1][W][V]) {
-                W = W - normalOrders[n-1].getWeight();
-                V = V - normalOrders[n-1].getVolume();
-                profit += normalOrders[n-1].getReward();
+                W = W - auxOrders[n - 1].getWeight();
+                V = V - auxOrders[n - 1].getVolume();
+                profit += auxOrders[n - 1].getReward();
                 ordersShiped.push_back(n-1);
             }
             n--;
@@ -477,18 +476,40 @@ void App::maxProfitDispatch() {
 
         if (profit > 0){
             for (auto index : ordersShiped)
-                van.add(normalOrders[index]);
+                van.add(auxOrders[index]);
             for (auto index : ordersShiped)
-                normalOrders.erase(normalOrders.begin()+index);
+                auxOrders.erase(auxOrders.begin() + index);
             maxProfit += profit;
+            usedVans++;
+            shipedOrdersNo += (int)ordersShiped.size();
         }
     }
-    cout << "The max profit is: " << maxProfit << endl;
+    int ordersLeft = (int)orders.size() - shipedOrdersNo;
+    writeProfitVans(usedVans, ordersLeft, maxProfit);
 }
 
 void App::resetVans() {
     for (auto van : vans){
         van.clearOrders();
     }
+}
+
+void App::writeProfitVans(int vansNo, int ordersLeft, int maxProfit) {
+    fstream profitVans;
+    clearFile(&profitVans, PROFITVANSFILE);
+    profitVans << "Maximum profit is: " << maxProfit << endl;
+
+    if(ordersLeft > 0) profitVans << "Impossible to deliver all orders: " << ordersLeft << " orders left" << endl;
+    else profitVans << "Delivered all orders" << endl;
+
+    profitVans << "Used " << vansNo << "/" << vans.size() << " vans" << endl;
+    profitVans << "Vans used and their orders:";
+    for(int i = 0 ; i < vansNo; i++){
+        profitVans << endl << "Van id: " << vans[i].getID() << " its orders: ";
+        for(int j = 0 ; j < vans[i].get_belong_orders().size(); j++){
+            profitVans << vans[i].get_belong_orders()[j].getID() << " ";
+        }
+    }
+    profitVans.close();
 }
 
