@@ -2,6 +2,7 @@
 #define PROJETO1_DA_ORDER_H
 
 #include <ostream>
+#include <iomanip>
 
 class Order {
 public:
@@ -16,6 +17,7 @@ public:
     void setShipped();
     void setUnshipped();
     bool isShipped();
+    static void resetId();
     friend std::ostream& operator<<(std::ostream& os, const Order &o);
 private:
     int ID;

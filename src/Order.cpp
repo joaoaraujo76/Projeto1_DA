@@ -36,7 +36,8 @@ int Order::getID() const {
 }
 
 ostream &operator<<(ostream &os, const Order &o) {
-    os << o.getVolume() << " " << o.getWeight() << " " << o.getReward() << " " << o.getDuration();
+    int size = 7;
+    os << setfill(' ') << setw(size) << o.getVolume() << setfill(' ') << setw(size + 2) << o.getWeight() << setfill(' ') << setw(size + 3) << o.getReward() << setfill(' ') << setw(size + 4) << o.getDuration();
     return os;
 }
 
@@ -63,4 +64,8 @@ void Order::setExpress(bool express) {
 int Order::generateID() {
     order_nID++;
     return order_nID;
+}
+
+void Order::resetId() {
+    order_nID = 0;
 }

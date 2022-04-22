@@ -44,24 +44,25 @@ public:
     void writeNormalOrders();
     void writeExpressOrders();
     void writeSettings();
-    void writeExpressOrders(int averageTime, size_t numDeliveries, int percentDeliveries);
+    void writeOptExpressOrders(int averageTime, size_t numDeliveries, int percentDeliveries);
     void writeEfficientVans(int vansNo, int ordersLeft);
     void writeProfitVans(int vansNo, int ordersLeft, int maxProfit);
     void saveFile(int file);
     void optimizeExpressDeliveries();
     void dispatchOrdersToVans();
     void maxProfitDispatch();
-    std::vector<Van> &getVans();
-    std::vector<Order> &getOrders() ;
     int getWorkingTime() const;
     void setWorkingTime(int workTime);
-    int getMaxExpressDuration();
+    int getMaxExpressDuration() const;
     void setMaxExpressDuration(int maxExpressDuration);
-    void resetExpressOrders();
+    void resetOrders();
     void resetVans();
-    void resetNormalOrders();
     void evaluateOrders();
-    void nextExpressDay();
+    void shipOrders();
+    void addOrder(Order &order);
+    void addVan(Van &van);
+    void removeOrder(int id);
+    void removeVan(int id);
 };
 
 #endif //PROJETO1_DA_APP_H

@@ -59,5 +59,12 @@ public:
     Menu *nextMenu() override;
 };
 
+class AddRemoveItens: public Menu{
+public:
+    explicit AddRemoveItens(App &app);
+    void display() override;
+    Menu *nextMenu() override;
+};
+
 
 #endif //PROJETO1_DA_MENU_H

@@ -5,7 +5,6 @@ using namespace std;
 App::App() = default;
 App::~App() = default;
 
-
 void App::readFile(int file) {
     switch (file) {
         case 0: readSettings(); break;
@@ -22,8 +21,9 @@ void App::loadData() {
 }
 
 void App::readVans() {
+    Van::resetId();
     fstream vansFile;
-    int maxVol, maxWeight, cost, id = 0;
+    int maxVol, maxWeight, cost;
 
     if(createFile(&vansFile,VANSFILE))
         cerr << "Unable to open vans.txt" << endl;
@@ -34,15 +34,16 @@ void App::readVans() {
     getline(file, info); // trash
 
     while (file >> maxVol >> maxWeight >> cost) {
-        Van van(id++,maxVol, maxWeight, cost);
+        Van van(maxVol, maxWeight, cost);
         vans.push_back(van);
     }
     file.close();
 }
 
 void App::readOrders() {
+    Order::resetId();
     fstream ordersFile;
-    int volume, weight, reward, duration, id;
+    int volume, weight, reward, duration;
     string info;
 
     if(createFile(&ordersFile, ORDERFILE))
@@ -79,24 +80,15 @@ void App::readSettings() {
     file.close();
 }
 
-
-std::vector<Van> &App::getVans() {
-    return vans;
-}
-
-std::vector<Order> &App::getOrders() {
-    return orders;
-}
-
 void App::optimizeExpressDeliveries() {
-    resetExpressOrders();
+    resetOrders();
     int shippedExpressOrders = 0;
     int currTime = 0;
     sort(orders.begin(), orders.end(), [](Order &lhs, Order &rhs) {
         return lhs.getDuration() < rhs.getDuration();
     });
     if (orders.front().getDuration() > workTime)
-        return writeExpressOrders(-1, 0, 0);
+        return writeOptExpressOrders(-1, 0, 0);
     for (Order &o: orders) {
         if (!o.isExpress())
             continue;
@@ -111,12 +103,12 @@ void App::optimizeExpressDeliveries() {
         }
     }
     if(shippedExpressOrders!=0)
-        writeExpressOrders((int) (currTime / shippedExpressOrders), shippedExpressOrders, (int)round(((double)shippedExpressOrders / (double)orders.size()) * 100));
+        writeOptExpressOrders((int) (currTime / shippedExpressOrders), shippedExpressOrders, (int)round(((double)shippedExpressOrders / (double)orders.size()) * 100));
 }
 
-void App::writeExpressOrders(int averageTime, size_t numDeliveries, int percentDeliveries) {
+void App::writeOptExpressOrders(int averageTime, size_t numDeliveries, int percentDeliveries) {
     fstream expressOrdersFile;
-    clearFile(&expressOrdersFile,7);
+    clearFile(&expressOrdersFile,OPTEXPORDERSFILE);
     if(averageTime == -1){
         expressOrdersFile << "Impossible to deliver any order";
         expressOrdersFile.close();
@@ -125,9 +117,10 @@ void App::writeExpressOrders(int averageTime, size_t numDeliveries, int percentD
     expressOrdersFile << "Average time of each delivery: " << averageTime << "s" << endl;
     expressOrdersFile << "Number of deliveries:          " << numDeliveries << endl;
     expressOrdersFile << "Percentage of deliveries made: " << percentDeliveries << "%" << endl;
+    expressOrdersFile <<  "id    volume   weight   reward   duration(s) \n";
     for(Order &order : orders){
         if(order.isShipped() && order.isExpress())
-            expressOrdersFile << order << endl;
+            expressOrdersFile << order.getID() << order << endl;
     }
     expressOrdersFile.close();
 }
@@ -136,7 +129,7 @@ void App::writeOrders() {
     int counter = 0;
     fstream ordersFile;
     clearFile(&ordersFile,ORDERFILE);
-    ordersFile << "volume peso recompensa duração(s) \n";
+    ordersFile << "   volume   weight   reward   duration(s) \n";
     for(Order &order : orders){
         counter++;
         if(counter == orders.size())
@@ -153,12 +146,12 @@ std::vector<std::string> App::readExpressOrdersData() {
     vector<string> data;
     fstream expressOrdersFile;
 
-    if(createFile(&expressOrdersFile,7)){
+    if(createFile(&expressOrdersFile,OPTEXPORDERSFILE)){
         data.emplace_back("No data available");
         expressOrdersFile.close();
         return data;
     }
-    expressOrdersFile.open(dataFolder + filesname[2]);
+    expressOrdersFile.open(dataFolder + filesname[OPTEXPORDERSFILE]);
     for(int i = 0; i < NUM_LINES; i++){
         getline(expressOrdersFile, info);
         data.push_back(info);
@@ -194,7 +187,7 @@ void App::saveFile(int file) {
 void App::writeVans() {
     fstream vansFile;
     clearFile(&vansFile,VANSFILE);
-    vansFile << "volMax pesoMax custo \n";
+    vansFile << "maxVolume   maxWeight   cost \n";
     for(const Van &van : vans){
         vansFile << van;
     }
@@ -211,23 +204,25 @@ void App::writeSettings() {
 }
 
 
-int App::getMaxExpressDuration() {
+int App::getMaxExpressDuration() const {
     return maxExpressDuration;
 }
 
-void App::resetExpressOrders() {
+void App::resetOrders() {
     for(Order &order : orders){
-        if(order.isExpress())
-            order.setUnshipped();
+        order.setUnshipped();
     }
 }
 
-void App::nextExpressDay() {
+void App::shipOrders() {
     auto aux = orders;
     for (auto itr = orders.begin(); itr != orders.end(); itr++) {
-        if ((*itr).isExpress())
+        if ((*itr).isShipped())
             aux.erase(itr);
     }
+    orders = aux;
+    writeOrders();
+    readOrders();
 }
 
 void App::dispatchOrdersToVans() {
@@ -236,7 +231,7 @@ void App::dispatchOrdersToVans() {
     vector<Order> normalOrders;
 
     resetVans();
-    resetNormalOrders();
+    resetOrders();
 
     for (auto &o : orders)
         if (!o.isExpress()) normalOrders.push_back(o);
@@ -290,7 +285,7 @@ void App::dispatchOrdersToVans() {
 void App::writeEfficientVans(int vansNo, int ordersLeft) {
     fstream EfficientVans;
     clearFile(&EfficientVans,MINVANSFILE);
-    float percentVans = (float) vansNo / vans.size() * 100;
+    float percentVans = (float) vansNo / (float)vans.size() * 100;
     if(ordersLeft > 0){
         EfficientVans << "Impossible to deliver all orders: " << ordersLeft << " orders left" << endl;
     }
@@ -314,8 +309,8 @@ int App::getWorkingTime() const {
     return workTime;
 }
 
-void App::setWorkingTime(int workTime) {
-    this->workTime = workTime*3600;
+void App::setWorkingTime(int workTm) {
+    this->workTime = workTm*3600;
 }
 
 bool App::createFile(std::fstream *file, int FILE_NUM) {
@@ -372,7 +367,7 @@ void App::evaluateOrders() {
 void App::writeNormalOrders() {
     fstream ordersFile;
     clearFile(&ordersFile, NORMALORDERSFILE);
-    ordersFile << "id volume peso recompensa duração(s) \n";
+    ordersFile << "id    volume   weight   reward   duration(s) \n";
     for(Order &order : orders){
         if(!order.isExpress()){
             ordersFile << order.getID() << " " << order << endl;
@@ -384,7 +379,7 @@ void App::writeNormalOrders() {
 void App::writeExpressOrders() {
     fstream ordersFile;
     clearFile(&ordersFile,EXPORDERSFILE);
-    ordersFile << "id volume peso recompensa duração(s) \n";
+    ordersFile << "id    volume   weight   reward   duration(s) \n";
     for(Order &order : orders){
         if(order.isExpress()){
             ordersFile << order.getID() << " " << order << endl;
@@ -393,26 +388,20 @@ void App::writeExpressOrders() {
     ordersFile.close();
 }
 
-void App::resetNormalOrders() {
-    for(Order &order : orders){
-        if(!order.isExpress())
-            order.setUnshipped();
-    }
-}
-
 bool App::clearFile(std::fstream *file, int FILE_NUM) {
+    bool exists = true;
     file->open(dataFolder + filesname[FILE_NUM], ofstream::out | ofstream::trunc);
     if(!file->is_open()){
         fstream newFile(dataFolder + filesname[FILE_NUM]);
         file = &newFile;
         newFile.open(dataFolder + filesname[FILE_NUM], ofstream::out | ofstream::trunc);
-        return false;
+        exists = false;
         if (!newFile.is_open()) {
             cerr << "Unable to open file";
             exit(1);
         }
     }
-    return true;
+    return exists;
 }
 
 bool App::emptyFile(fstream *file, const int FILE_NUM) {
@@ -426,10 +415,10 @@ bool App::emptyFile(fstream *file, const int FILE_NUM) {
 
 void App::maxProfitDispatch() {
     int maxProfit = 0, profit;
-    int shipedOrdersNo = 0;
+    int shippedOrdersNo = 0;
     int usedVans = 0;
     vector<Order> auxOrders;
-    resetNormalOrders();
+    resetOrders();
     resetVans();
 
     for (auto &o : orders) auxOrders.push_back(o);
@@ -442,7 +431,7 @@ void App::maxProfitDispatch() {
         int W = van.getWeight();
         int V = van.getVolume();
         int n = (int) auxOrders.size();
-        vector<int> ordersShiped;
+        vector<int> ordersShipped;
         profit = -van.getCost();
 
         if (auxOrders.empty()) break;
@@ -469,22 +458,22 @@ void App::maxProfitDispatch() {
                 W = W - auxOrders[n - 1].getWeight();
                 V = V - auxOrders[n - 1].getVolume();
                 profit += auxOrders[n - 1].getReward();
-                ordersShiped.push_back(n-1);
+                ordersShipped.push_back(n-1);
             }
             n--;
         }
 
         if (profit > 0){
-            for (auto index : ordersShiped)
+            for (auto index : ordersShipped)
                 van.add(auxOrders[index]);
-            for (auto index : ordersShiped)
+            for (auto index : ordersShipped)
                 auxOrders.erase(auxOrders.begin() + index);
             maxProfit += profit;
             usedVans++;
-            shipedOrdersNo += (int)ordersShiped.size();
+            shippedOrdersNo += (int)ordersShipped.size();
         }
     }
-    int ordersLeft = (int)orders.size() - shipedOrdersNo;
+    int ordersLeft = (int)orders.size() - shippedOrdersNo;
     writeProfitVans(usedVans, ordersLeft, maxProfit);
 }
 
@@ -511,5 +500,35 @@ void App::writeProfitVans(int vansNo, int ordersLeft, int maxProfit) {
         }
     }
     profitVans.close();
+}
+
+void App::addOrder(Order &order) {
+    orders.push_back(order);
+    writeOrders();
+}
+
+void App::addVan(Van &van) {
+    vans.push_back(van);
+    writeVans();
+}
+
+void App::removeOrder(int id) {
+    for(auto itr = orders.begin(); itr != orders.end(); itr++){
+        if ((*itr).getID() == id){
+            orders.erase(itr);
+            return;
+        }
+    }
+    writeOrders();
+}
+
+void App::removeVan(int id) {
+    for(auto itr = vans.begin(); itr != vans.end(); itr++){
+        if ((*itr).getID() == id){
+            vans.erase(itr);
+            return;
+        }
+    }
+    writeVans();
 }
 
