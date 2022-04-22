@@ -116,7 +116,7 @@ void App::optimizeExpressDeliveries() {
 
 void App::writeExpressOrders(int averageTime, size_t numDeliveries, int percentDeliveries) {
     fstream expressOrdersFile;
-    clearFile(&expressOrdersFile,EXPORDERSFILE);
+    clearFile(&expressOrdersFile,7);
     if(averageTime == -1){
         expressOrdersFile << "Impossible to deliver any order";
         expressOrdersFile.close();
@@ -153,7 +153,7 @@ std::vector<std::string> App::readExpressOrdersData() {
     vector<string> data;
     fstream expressOrdersFile;
 
-    if(createFile(&expressOrdersFile,EXPORDERSFILE)){
+    if(createFile(&expressOrdersFile,7)){
         data.emplace_back("No data available");
         expressOrdersFile.close();
         return data;
