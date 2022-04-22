@@ -31,7 +31,8 @@ int Van::getID() const {
 }
 
 ostream &operator<<(ostream &os, const Van &o) {
-    os << o.getVolume() << " " << o.getWeight() << " " << o.getCost() << endl;
+    int size = 8;
+    os << setfill(' ') << setw(size) << o.getVolume() << setfill(' ') << setw(size + 4) << o.getWeight() << setfill(' ') << setw(size + 3) << o.getCost() << endl;
     return os;
 }
 

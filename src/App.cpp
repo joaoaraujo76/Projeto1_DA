@@ -187,7 +187,7 @@ void App::saveFile(int file) {
 void App::writeVans() {
     fstream vansFile;
     clearFile(&vansFile,VANSFILE);
-    vansFile << "maxVolume   maxWeight   cost \n";
+    vansFile << "  maxVolume   maxWeight   cost \n";
     for(const Van &van : vans){
         vansFile << van;
     }
@@ -367,10 +367,10 @@ void App::evaluateOrders() {
 void App::writeNormalOrders() {
     fstream ordersFile;
     clearFile(&ordersFile, NORMALORDERSFILE);
-    ordersFile << "id    volume   weight   reward   duration(s) \n";
+    ordersFile << " id    volume   weight   reward   duration(s) \n";
     for(Order &order : orders){
         if(!order.isExpress()){
-            ordersFile << order.getID() << " " << order << endl;
+            ordersFile << setw(3) << order.getID() << " " << order << endl;
         }
     }
     ordersFile.close();
@@ -379,10 +379,10 @@ void App::writeNormalOrders() {
 void App::writeExpressOrders() {
     fstream ordersFile;
     clearFile(&ordersFile,EXPORDERSFILE);
-    ordersFile << "id    volume   weight   reward   duration(s) \n";
+    ordersFile << " id    volume   weight   reward   duration(s) \n";
     for(Order &order : orders){
         if(order.isExpress()){
-            ordersFile << order.getID() << " " << order << endl;
+            ordersFile << setw(3) << order.getID() << " " << order << endl;
         }
     }
     ordersFile.close();
