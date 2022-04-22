@@ -215,14 +215,11 @@ void App::resetOrders() {
 }
 
 void App::shipOrders() {
-    auto aux = orders;
     for (auto itr = orders.begin(); itr != orders.end(); itr++) {
         if ((*itr).isShipped())
-            aux.erase(itr);
+            orders.erase(itr--);
     }
-    orders = aux;
     writeOrders();
-    readOrders();
 }
 
 void App::dispatchOrdersToVans() {
@@ -253,6 +250,8 @@ void App::dispatchOrdersToVans() {
             if (vanRemainVol[j] >= normalOrders[i].getVolume() && vanRemainWeight[j] >= normalOrders[i].getWeight() && !normalOrders[i].isExpress()) {
                 vanRemainVol[j] = vanRemainVol[j] - normalOrders[i].getVolume();
                 vanRemainWeight[j] = vanRemainWeight[j] - normalOrders[i].getWeight();
+                for (auto &o : orders)
+                    if (o.getID() == normalOrders[i].getID()) o.setShipped();
                 normalOrders[i].setShipped();
                 vans[j].add(normalOrders[i]);
                 break;
@@ -271,7 +270,8 @@ void App::dispatchOrdersToVans() {
                 vanRemainVol[vansNo] = vanVol - normalOrders[i].getVolume();
                 vanRemainWeight[vansNo] = vanWeight - normalOrders[i].getWeight();
                 normalOrders[i].setShipped();
-
+                for (auto &o : orders)
+                    if (o.getID() == normalOrders[i].getID()) o.setShipped();
                 vans[j].add(normalOrders[i]);
                 vansNo++;
             }
@@ -464,8 +464,14 @@ void App::maxProfitDispatch() {
         }
 
         if (profit > 0){
-            for (auto index : ordersShipped)
-                van.add(auxOrders[index]);
+            for (auto index : ordersShipped){
+                auto shippedOrder = auxOrders[index];
+                int id = shippedOrder.getID();
+                for (auto &o : orders){
+                    if (o.getID() == id) o.setShipped();
+                }
+                van.add(shippedOrder);
+            }
             for (auto index : ordersShipped)
                 auxOrders.erase(auxOrders.begin() + index);
             maxProfit += profit;
@@ -516,7 +522,7 @@ void App::removeOrder(int id) {
     for(auto itr = orders.begin(); itr != orders.end(); itr++){
         if ((*itr).getID() == id){
             orders.erase(itr);
-            return;
+            break;
         }
     }
     writeOrders();
@@ -526,7 +532,7 @@ void App::removeVan(int id) {
     for(auto itr = vans.begin(); itr != vans.end(); itr++){
         if ((*itr).getID() == id){
             vans.erase(itr);
-            return;
+            break;
         }
     }
     writeVans();

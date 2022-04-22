@@ -46,7 +46,7 @@ void MainMenu::display(){
     cout << "1 - Normal Orders management" << endl;
     cout << "2 - Express Orders management" << endl;
     cout << "3 - Ship orders" << endl;
-    cout << "4 - Vans and Order Management" << endl;
+    cout << "4 - Add/Remove Vans or Orders" << endl;
     cout << "0 - Exit" << endl;
     cout << endl;
 }
@@ -94,6 +94,8 @@ Menu *ExpressOrderMenu::nextMenu() {
         case 2: {
             for(const string &line : app.readExpressOrdersData())
                 cout << line << endl;
+            cout << "Done!" << endl;
+            waitForKey();
             return this;
         }
         case 3: {
@@ -124,12 +126,16 @@ Menu *ExpressSettingsMenu::nextMenu() {
                 time = readInt();
             } while (time > 24);
             app.setWorkingTime(time);
+            cout << "Done!" << endl;
+            waitForKey();
             return this;
         }
         case 2:{
             cout << "Please insert the new Max Express Delivery time: ";
             time = readInt();
             app.setMaxExpressDuration(time);
+            cout << "Done!" << endl;
+            waitForKey();
             return this;
         }
         case 0:
@@ -147,7 +153,7 @@ void NormalOrderMenu::display() {
     cout << endl;
     cout << "Normal Orders Management:" << endl;
     cout << "1 - Min vans scenario" << endl;
-    cout << "2 - Max profit scenario (not done)" << endl;
+    cout << "2 - Max profit scenario " << endl;
     cout << "0 - Exit" << endl;
     cout << endl;
 }
@@ -188,6 +194,8 @@ Menu *MinVansMenu::nextMenu() {
         case 2: {
             for(const string &line : app.readEfficientVansData(App::MINVANSFILE))
                 cout << line << endl;
+            cout << "Done!" << endl;
+            waitForKey();
             return this;
         }
         case 0:
@@ -203,7 +211,7 @@ MaxProfitMenu::MaxProfitMenu(App &app) : Menu(app) {
 
 void MaxProfitMenu::display() {
     cout << endl;
-    cout << "Max Profit Scenario: (not done)" << endl;
+    cout << "Max Profit Scenario:" << endl;
     cout << "1 - Dispatch Orders to Vans" << endl;
     cout << "2 - See Information" << endl;
     cout << "0 - Exit" << endl;
@@ -221,6 +229,8 @@ Menu *MaxProfitMenu::nextMenu() {
         case 2: {
             for(const string &line : app.readEfficientVansData(App::PROFITVANSFILE))
                 cout << line << endl;
+            cout << "Done!" << endl;
+            waitForKey();
             return this;
         }
         case 0:
@@ -257,7 +267,7 @@ Menu *AddRemoveItens::nextMenu() {
             c = readInt();
             Van newVan(v, w, c);
             app.addVan(newVan);
-            cout << "Van inserted successfully" << endl;
+            cout << "Van with ID=" << newVan.getID() << " inserted successfully" << endl;
             cout << "Done!" << endl;
             waitForKey();
             return this;
@@ -281,7 +291,7 @@ Menu *AddRemoveItens::nextMenu() {
             d = readInt();
             Order newOrder(v, w, r, d);
             app.addOrder(newOrder);
-            cout << "Order inserted successfully" << endl;
+            cout << "Order with ID=" << newOrder.getID() << " inserted successfully" << endl;
             waitForKey();
             return this;
         }
