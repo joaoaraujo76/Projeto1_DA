@@ -17,6 +17,9 @@ public:
     void setShipped();
     void setUnshipped();
     bool isShipped();
+    /**
+     * Resets the orders id to zero
+     */
     static void resetId();
     friend std::ostream& operator<<(std::ostream& os, const Order &o);
 private:
@@ -28,6 +31,10 @@ private:
     int DURATION;
     bool express;
     bool shipped;
+    /**
+     * Generates an id by incrementing the static order_nID variable
+     * @return new unique id to the new order
+     */
     int generateID();
 };
 

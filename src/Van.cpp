@@ -2,7 +2,7 @@
 
 using namespace std;
 
-int Van::order_nID = 0;
+int Van::van_nID = 0;
 
 
 Van::Van(int MAX_VOL, int MAX_WEIGHT, int COST, vector<Order> belong_orders) {
@@ -48,12 +48,12 @@ void Van::clearOrders() {
 }
 
 void Van::resetId() {
-    order_nID = 0;
+    van_nID = 0;
 }
 
 int Van::generateID() {
-    order_nID++;
-    return order_nID;
+    van_nID++;
+    return van_nID;
 }
 
 

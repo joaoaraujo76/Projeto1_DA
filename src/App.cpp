@@ -31,7 +31,7 @@ void App::readVans() {
     vansFile.close();
 
     ifstream file(dataFolder + filesname[VANSFILE]);
-    getline(file, info); // trash
+    getline(file, info);
 
     while (file >> maxVol >> maxWeight >> cost) {
         Van van(maxVol, maxWeight, cost);
